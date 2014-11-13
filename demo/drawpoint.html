@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html>
-
+<!--
+    webGL DEMO
+    @author     Z.Mofei<13761509829@163.com>
+    @website    http://www.zhuwenlong.com
+-->
 <head>
     <meta name="description" content="webgl demo" />
     <meta charset="utf-8">
@@ -9,18 +13,19 @@
 
 <body>
     <canvas id="webgl"></canvas>
+
     <script id="jsbin-javascript">
     var canvas = document.getElementById('webgl');
 
-    //step one
-    //getContext for some reason it could be any of them.
-    //"webgl", "experimental-webgl", "webkit-3d", "moz-webgl"
+    //STEP ONE
+    //getContext , for some reason ,the name of webgl content could be any of them below.
+    //["webgl", "experimental-webgl", "webkit-3d", "moz-webgl"]
     var webgl = canvas.getContext('webgl');
-    // for and try
 
 
-    //step two
-    //create shader and link to program
+    //STEP TWO
+    //create shader and program
+    //link shader to program
     console.dir(webgl);
 
     var VSHADER_SOURCE =
@@ -32,10 +37,10 @@
 
     var FSHADER_SOURCE =
         'void main() {\n' +
-        '  gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n' + // Set the point color
+        '  gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n' + 
         '}\n';
-
-    //!!!!!!!TODO:TRY NUMBER
+    
+    //all the attribute in webGL content are number.
     //VERTEX_SHADER:35633 FRAGMENT_SHADER:35632 LINK_STATUS:35714 COMPILE_STATUS:35713
     console.log(webgl.VERTEX_SHADER, webgl.FRAGMENT_SHADER, webgl.LINK_STATUS, webgl.COMPILE_STATUS)
 
@@ -46,33 +51,37 @@
     webgl.shaderSource(VShader, VSHADER_SOURCE);
     webgl.compileShader(VShader);
     //checked the webgl.COMPILE_STATUS
-    //if not get the error -> webgl.getShaderInfoLog(shader)
-    //then delect Shader  webgl.deleteShader(shader)
+    //if compileShader is faild 
+    //the error information will be found in -> webgl.getShaderInfoLog(shader)
+    //and in that case you should delect Shader use -> webgl.deleteShader(shader)
+    //------------------------
+    //attach shader to program
     webgl.attachShader(program, VShader);
 
-    //----------------------
+    //fragment shader the same as vertex shader
     var FShader = webgl.createShader(webgl.FRAGMENT_SHADER);
-    console.log(FShader, '123');
     webgl.shaderSource(FShader, FSHADER_SOURCE);
     webgl.compileShader(FShader);
     webgl.attachShader(program, FShader);
 
+    //link the program which attached the shader to webgl contetn
     webgl.linkProgram(program);
-    //webgl.getProgramParameter(program, webgl.LINK_STATUS);
-    //if not webgl.getProgramInfoLog(program)
+    //check webgl.getProgramParameter(program, webgl.LINK_STATUS);
+    //if not exist the link was failed 
+    //you can fine the error information in  webgl.getProgramInfoLog(program)
+    //last don't forget to delete program and delete all the shard
     //gl.deleteProgram(program);
     //gl.deleteShader(VShader);
     //gl.deleteShader(FShader);
 
+    //let the webgl content use program above
     webgl.useProgram(program);
     webgl.program = program;
-    console.log(program);
 
-
-    //step three
+    //STEP THREE
+    //clear the canvas and the draw the point in it
     webgl.clearColor(0.0, 0.0, 0.0, 1.0);
     webgl.clear(webgl.COLOR_BUFFER_BIT);
-    console.log(webgl.COLOR_BUFFER_BIT, 22, webgl.POINTS);
     webgl.drawArrays(webgl.POINTS, 0, 1);
     </script>
 
