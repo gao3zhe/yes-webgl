@@ -8,7 +8,7 @@
 <head>
     <meta name="description" content="webgl demo" />
     <meta charset="utf-8">
-    <title>JS Bin</title>
+    <title>WebGL DEMO</title>
 </head>
 
 <body>
@@ -82,75 +82,6 @@
     //clear the canvas and the draw the point in it
     webgl.clearColor(0.0, 0.0, 0.0, 1.0);
     webgl.clear(webgl.COLOR_BUFFER_BIT);
-    webgl.drawArrays(webgl.POINTS, 0, 1);
-    </script>
-
-
-
-    <script id="jsbin-source-javascript" type="text/javascript">
-    var canvas = document.getElementById('webgl');
-
-    //step one
-    //getContext for some reason it could be any of them.
-    //"webgl", "experimental-webgl", "webkit-3d", "moz-webgl"
-    var webgl = canvas.getContext('webgl');
-    // for and try
-
-
-    //step two
-    //create shader and link to program
-    console.dir(webgl);
-
-    var VSHADER_SOURCE =
-        'attribute vec4 a_Position;\n' +
-        'void main() {\n' +
-        '  gl_Position = a_Position;\n' +
-        '  gl_PointSize = 10.0;\n' +
-        '}\n';
-
-    var FSHADER_SOURCE =
-        'void main() {\n' +
-        '  gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n' + // Set the point color
-        '}\n';
-
-    //!!!!!!!TODO:TRY NUMBER
-    //VERTEX_SHADER:35633 FRAGMENT_SHADER:35632 LINK_STATUS:35714 COMPILE_STATUS:35713
-    console.log(webgl.VERTEX_SHADER, webgl.FRAGMENT_SHADER, webgl.LINK_STATUS, webgl.COMPILE_STATUS)
-
-    //create webgl program
-    var program = webgl.createProgram();
-
-    var VShader = webgl.createShader(webgl.VERTEX_SHADER);
-    webgl.shaderSource(VShader, VSHADER_SOURCE);
-    webgl.compileShader(VShader);
-    //checked the webgl.COMPILE_STATUS
-    //if not get the error -> webgl.getShaderInfoLog(shader)
-    //then delect Shader  webgl.deleteShader(shader)
-    webgl.attachShader(program, VShader);
-
-    //----------------------
-    var FShader = webgl.createShader(webgl.FRAGMENT_SHADER);
-    console.log(FShader, '123');
-    webgl.shaderSource(FShader, FSHADER_SOURCE);
-    webgl.compileShader(FShader);
-    webgl.attachShader(program, FShader);
-
-    webgl.linkProgram(program);
-    //webgl.getProgramParameter(program, webgl.LINK_STATUS);
-    //if not webgl.getProgramInfoLog(program)
-    //gl.deleteProgram(program);
-    //gl.deleteShader(VShader);
-    //gl.deleteShader(FShader);
-
-    webgl.useProgram(program);
-    webgl.program = program;
-    console.log(program);
-
-
-    //step three
-    webgl.clearColor(0.0, 0.0, 0.0, 1.0);
-    webgl.clear(webgl.COLOR_BUFFER_BIT);
-    console.log(webgl.COLOR_BUFFER_BIT, 22, webgl.POINTS);
     webgl.drawArrays(webgl.POINTS, 0, 1);
     </script>
 </body>
