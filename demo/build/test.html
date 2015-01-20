@@ -198,15 +198,32 @@ function load() {
     // Scene.addObject(Floor);
     Scene.addObject(Axis);
 
-    Scene.addObject(createBall(20,0,0,0,30,30));
+    Scene.addObject(createBall(10,0,0,0,30,30));
+    // var points=[6.0,6.0,0.0,
+    //             6.0,-6.0,0.0,
+    //             0.0,0.0,0.0,
+    //             -6.0,-6.0,0.0,
+    //             -6.0,6.0,0.0]
+    // Scene.addObject(drawArea(points));
+
     // Scene.loadObject('models/geometry/ball.json','ball');
-    // Scene.loadObject('models/geometry/flag.json', 'flag');
-    // Scene.loadObject('models/geometry/test.json', 'test');
+    // Scene.loadObject('models/geometry/flag.json','flag');
+    // Scene.loadObject('models/geometry/test.json','test');
 
     
 }
 
+// function drawArea(points){
+//     //三角形算法
+//     return {
+//         "wireframe": false,
+//         "vertices":points,
+//         "indices": [0,1,2,2,3,4,4,2,0]
+//     }
+// }
+
 function createBall(r, x, y, z, xd, yd) {
+    var color=[1.0,0.0,0.0,1.0];
 
     var Info = [];
     //Y
@@ -238,10 +255,6 @@ function createBall(r, x, y, z, xd, yd) {
         Info[i].points=getCriclePoints(rad,Info[i].y);
         // radius.push(rad);
     }
-
-    
-    
-    
 
     function getRadiusByY(yV){
         var thisR = Math.abs(yV-y);
@@ -278,15 +291,17 @@ function createBall(r, x, y, z, xd, yd) {
     }
 
     var indi=[];
+    var scalars=[];
     for(var i=0;i<vert.length/3;i++){
         indi.push(i);
+        scalars.push(color);
     }
 
-    // indi=[1,2,0,2,3,0,3,4,0,4,5,0,5,6,0]
+    
     indi=[];
     // addIndiByLine(3,indi);    
+    // addIndiByLine(6,indi);    
 
-    // addIndiByLine(i,indi); 
     for(var i=1;i<=yd;i++){
         addIndiByLine(i,indi);    
     }
@@ -295,7 +310,6 @@ function createBall(r, x, y, z, xd, yd) {
         var start = (line-1)*xd +1;
         var end = line * xd + 1;
         var max = yd * xd + 1;
-        // var min=vert.length;
 
         for(var i=start;i<end;i++){
             //up 
@@ -314,10 +328,11 @@ function createBall(r, x, y, z, xd, yd) {
     }
 
     return {
-        wireframe: true,
-        // "vertices": [0, 0, 0, 9, 0, 0, 9, 9, 0, 0, 9, 0, 0, 0, 9, 9, 0, 9, 9, 9, 9, 0, 9, 9],
+        "wireframe": true,
         "vertices":vert,
-        "indices": indi
+        "indices": indi,
+        "scalars":scalars,
+         "diffuse"  : [1.0,0.0,0.0,1.0]
     }
 }
 
