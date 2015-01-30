@@ -217,7 +217,7 @@ for (var i = 0; i < 30; i++) {
     var obj = {
         start: [parseInt(Math.random() * 360 - 180), parseInt(Math.random() * 180 - 90)],
         end: [parseInt(Math.random() * 360 - 180), parseInt(Math.random() * 180 - 90)],
-        balls: parseInt(Math.random() * 20 + 1),
+        balls: parseInt(Math.random() * 10 + 1),
         speed: parseInt(Math.random() * 4000) + 4000
     }
 
