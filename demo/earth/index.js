@@ -79,12 +79,6 @@ earthGlow.position = earth.position;
 earthGlow.scale.multiplyScalar(1.01);
 scene.add(earthGlow);
 
-
-
-
-
-
-
 var GOLBAL_Points = [];
 //
 
@@ -140,10 +134,8 @@ function addLine(obj) {
     var points = [];
     // 
     for (var i = 0; i < deep; i++) {
-        // latlonToPoint[]
         var lat = obj.start[0] + deeplat * i;
         var lon = obj.start[1] + deeplon * i;
-        // console.log(lat, lon)
         var C = 1.1;
 
         points.push(latlonToPoint(lat, lon, GLOBAL.earthRadius * 1.05));
@@ -152,26 +144,34 @@ function addLine(obj) {
     var curve = new THREE.SplineCurve3(points);
 
     //draw line
-    var geometry = new THREE.Geometry();
-    geometry.vertices = curve.getPoints(100);
+    var linesGeo = new THREE.Geometry();
+    linesGeo.vertices = curve.getPoints(100);
 
     GLOBAL.line[id].info = GLOBAL.line[id].info || {};
-    GLOBAL.line[id].info.vertices = geometry.vertices;
+    GLOBAL.line[id].info.vertices = linesGeo.vertices;
 
     //TODO REMOVE
-    GOLBAL_Points.push(geometry.vertices);
+    GOLBAL_Points.push(linesGeo.vertices);
 
+    var color = '#' + parseInt(Math.random() * 255).toString(16) + parseInt(Math.random() * 255).toString(16) + parseInt(Math.random() * 255).toString(16);
+    // var color = '#' + parseInt(Math.random() * 255).toString(16) + 'ffff';
     var material = new THREE.LineBasicMaterial({
-        color: '#00ff00'
+        color: color,
+        opacity: 0.5,
+        transparent: true,
+        linewidth: 3,
+        // linecap:'square'
     });
+    // material.transparent = true;
 
-    var curveObject = new THREE.Line(geometry, material);
+    var curveObject = new THREE.Line(linesGeo, material);
     scene.add(curveObject);
     //
 
 
     //create a ball
-    var ball = new THREE.SphereGeometry(5, 50, 50);
+    var ball = new THREE.SphereGeometry(2, 50, 50);
+    var ballColor = '#' + parseInt(Math.random() * 255).toString(16) + parseInt(Math.random() * 255).toString(16) + parseInt(Math.random() * 255).toString(16);
     var ballGlowMaterial = new THREE.ShaderMaterial({
         uniforms: {
             "c": {
@@ -180,13 +180,13 @@ function addLine(obj) {
             },
             "p": {
                 type: "f",
-                value: 2.0
+                value: 10.0
             },
-            glowColor: {
+            "glowColor": {
                 type: "c",
-                value: new THREE.Color('green')
+                value: new THREE.Color(ballColor)
             },
-            viewVector: {
+            "viewVector": {
                 type: "v3",
                 value: camera.position
             }
@@ -198,56 +198,32 @@ function addLine(obj) {
         transparent: true
     });
 
-
-
-    var ballObject = new THREE.Mesh(ball.clone(), ballGlowMaterial.clone());
-    particleGroup = new THREE.Object3D();
-    particleGroup.add(ballObject);
-
-    ballObject.verIndex = 0;
-    ballObject.totalIndex = GLOBAL.line[id].info.vertices.length;
-    ballObject.speed = obj.speed;
+    var totalIndex = GLOBAL.line[id].info.vertices.length;
     GLOBAL.line[id].balls = GLOBAL.line[id].balls || [];
-    GLOBAL.line[id].balls.push(ballObject);
+    var perStep = totalIndex / obj.balls;
+    // console.log(totalIndex, i);
 
-    // console.log(id, GLOBAL.line[id].balls[0].verIndex, '@@@');
-    scene.add(particleGroup);
-    //
+    for (var i = 0; i < obj.balls; i++) {
+        var ballObject = new THREE.Mesh(ball.clone(), ballGlowMaterial.clone());
+        ballObject.verIndex = perStep * i;
+        ballObject.totalIndex = totalIndex;
+        ballObject.speed = obj.speed;
+        GLOBAL.line[id].balls.push(ballObject);
+        scene.add(ballObject);
+    }
 }
 
-// var obj = {
-//     start: [0, 10],
-//     end: [40, -90],
-//     speed: ''
-// }
-
-// addLine(obj);
-
-// var obj = {
-//     start: [-40, 10],
-//     end: [80, -90],
-//     speed: ''
-// }
-
-// addLine(obj);
-
-for (var i = 0; i < 5; i++) {
-
+for (var i = 0; i < 30; i++) {
     var obj = {
-            start: [parseInt(Math.random() * 360 - 180), parseInt(Math.random() * 180 - 90)],
-            end: [parseInt(Math.random() * 360 - 180), parseInt(Math.random() * 180 - 90)],
-            speed: parseInt(Math.random() * 4000) + 2000
-        }
-        // console.log(obj);
+        start: [parseInt(Math.random() * 360 - 180), parseInt(Math.random() * 180 - 90)],
+        end: [parseInt(Math.random() * 360 - 180), parseInt(Math.random() * 180 - 90)],
+        balls: parseInt(Math.random() * 20 + 1),
+        speed: parseInt(Math.random() * 4000) + 4000
+    }
+
     addLine(obj);
 }
 
-// console.log(GLOBAL.line);
-
-//readin the sence
-
-
-// var theindex = 0;
 var clock = new THREE.Clock(true);
 clock.start();
 
@@ -260,66 +236,43 @@ function render() {
 }
 render();
 
-
-// var lastTime = +new Date();
-
-
-// console.log('XXXXX', lastTime)
-
 function readenBall() {
-    // var now = +new Date();
-    // var time = now - lastTime||now;
-    // console.log();
-    // lastTime = now;
 
-    // var speed = parseInt(theindex / 3);
-    // return false;
     var timePass = clock.getDelta();
     for (var i in GLOBAL.line) {
+        // console.log(i);
+
         // console.log(GLOBAL.line[i].info.vertices.length);
         var line = GLOBAL.line[i];
         var balls = line.balls;
         var ballsLen = balls.length;
+        // console.log(balls.length);
         for (var j = 0; j < ballsLen; j++) {
-            var ball = balls[0];
+            var ball = balls[j];
             // console.log(ball.speed);
             var step = ball.totalIndex / ball.speed;
             ball.verIndex += timePass * 1000 * step;
             // console.log(ballIndex, ball.totalIndex,ballIndex >= ball.totalIndex);
             var ballIndex = parseInt(ball.verIndex);
-            // console.log(ballIndex, ball.totalIndex,ballIndex >= ball.totalIndex);‘
-            console.log(ballIndex, ball.totalIndex);
+
+            if (ballIndex >= ball.totalIndex) {
+                ball.verIndex = ballIndex = 0;
+            }
+
             var vertext = line.info.vertices[ballIndex];
-            if (vertext) {
+            try {
                 ball.position.x = vertext.x;
                 ball.position.y = vertext.y;
                 ball.position.z = vertext.z;
+            } catch (e) {
+                console.log(ballIndex, ball.totalIndex, ballIndex >= ball.totalIndex)
             }
+
 
             ball.material.uniforms.viewVector.value = new THREE.Vector3().subVectors(camera.position, ball.position);
-            // console.log(line.info.vertices[ball.verIndex]);
-            // console.log(balls[0].verIndex++)
 
-            if (ballIndex >= ball.totalIndex - 1) {
-                // console.log('XXXXXXX')
-                ball.verIndex = 0;
-            }
         }
 
     }
 
-    // particleGroup
-    // console.log(theindex);
-
-    // for (var c = 0; c < particleGroup.children.length; c++) {
-    //     theindex++;
-    //     var sprite = particleGroup.children[c];
-    //     sprite.material.uniforms.viewVector.value = new THREE.Vector3().subVectors(camera.position, sprite.position);
-    //     if (speed >= GOLBAL_Points[0].length - 1) {
-    //         theindex = 0;
-    //     };
-    //     sprite.position.x = GOLBAL_Points[0][speed].x;
-    //     sprite.position.y = GOLBAL_Points[0][speed].y;
-    //     sprite.position.z = GOLBAL_Points[0][speed].z;
-    // }
 }
