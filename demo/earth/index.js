@@ -4,10 +4,12 @@
  * based on three.js (http://threejs.org/)
  */
 
+var GLOBAL = {};
+
 //new scence camera and renderer
 var scene = new THREE.Scene();
 var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 20000);
-camera.position.set(0, 150, 200);
+camera.position.set(0, 0, 200);
 camera.lookAt(scene.position);
 var renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -15,13 +17,6 @@ document.body.appendChild(renderer.domElement);
 
 
 controls = new THREE.OrbitControls(camera, renderer.domElement);
-// LIGHT
-// var light = new THREE.PointLight(0xffffff);
-// light.position.set(0, 150, 100);
-// scene.add(light);
-
-// var light2 = new THREE.AmbientLight(0x444444);
-// scene.add(light2);
 
 // SKYBOX
 var skyBoxGeometry = new THREE.SphereGeometry(5000, 200, 200);
@@ -40,96 +35,8 @@ var skyBox = new THREE.Mesh(skyBoxGeometry, skyBoxMaterial);
 
 
 
-//*********
-
-var Shaders = {
-    // 'earth': {
-    //     uniforms: {
-    //         'texture': {
-    //             type: 't',
-    //             value: null
-    //         }
-    //     },
-    //     vertexShader: [
-    //         'varying vec3 vNormal;',
-    //         'varying vec2 vUv;',
-    //         'void main() {',
-    //         'gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );',
-    //         'vNormal = normalize( normalMatrix * normal );',
-    //         'vUv = uv;',
-    //         '}'
-    //     ].join('\n'),
-    //     fragmentShader: [
-    //         'uniform sampler2D texture;',
-    //         'varying vec3 vNormal;',
-    //         'varying vec2 vUv;',
-    //         'void main() {',
-    //         'vec3 diffuse = texture2D( texture, vUv ).xyz;',
-    //         'float intensity = 1.05 - dot( vNormal, vec3( 0.0, 0.0, 1.0 ) );',
-    //         'vec3 atmosphere = vec3( 1.0, 1.0, 1.0 ) * pow( intensity, 3.0 );',
-    //         'gl_FragColor = vec4( diffuse + atmosphere, 1.0 );',
-    //         '}'
-    //     ].join('\n')
-    // },
-    'atmosphere': {
-        uniforms: {},
-        vertexShader: [
-            'varying vec3 vNormal;',
-            'void main() {',
-            'vNormal = normalize( normalMatrix * normal );',
-            'gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );',
-            '}'
-        ].join('\n'),
-        fragmentShader: [
-            'varying vec3 vNormal;',
-            'void main() {',
-            'float intensity = pow( 0.8 - dot( vNormal, vec3( 0, 0, 1.0 ) ), 12.0 );',
-            'gl_FragColor = vec4( 1.0, 1.0, 1.0, 1.0 ) * intensity;',
-            '}'
-        ].join('\n')
-    }
-};
-
-var geometry = new THREE.SphereGeometry(100, 40, 30);
-
-shader = Shaders['atmosphere'];
-uniforms = THREE.UniformsUtils.clone(shader.uniforms);
-
-material = new THREE.ShaderMaterial({
-
-    uniforms: uniforms,
-    vertexShader: shader.vertexShader,
-    fragmentShader: shader.fragmentShader,
-    side: THREE.BackSide,
-    blending: THREE.AdditiveBlending,
-    transparent: true
-
-});
-
-mesh = new THREE.Mesh(geometry, material);
-mesh.scale.set(1.2, 1.2, 1.2);
-// scene.add(mesh);
-//*********
-
-// var imagePrefix = "img/universe.jpg";
-// var directions = ["xpos", "xneg", "ypos", "yneg", "zpos", "zneg"];
-// var skyGeometry = new THREE.BoxGeometry(10000, 10000, 10000);
-// var materialArray = [];
-// for (var i = 0; i < 6; i++)
-//     materialArray.push(new THREE.MeshBasicMaterial({
-//         map: THREE.ImageUtils.loadTexture(imagePrefix),
-//         side: THREE.BackSide
-//     }));
-// var skyMaterial = new THREE.MeshFaceMaterial(materialArray);
-// var skyBox = new THREE.Mesh(skyGeometry, skyMaterial);
-// scene.add(skyBox);
-
-
-
-
-
 //create a earth
-var geometry = new THREE.SphereGeometry(100, 200, 200);
+var geometry = new THREE.SphereGeometry(GLOBAL.earthRadius = 100, 200, 200);
 var earthTexture = new THREE.ImageUtils.loadTexture('img/Earth_Map.jpg');
 // var earthTexture = new THREE.ImageUtils.loadTexture('img/world.jpg');
 var earthMaterial = new THREE.MeshBasicMaterial({
@@ -137,9 +44,11 @@ var earthMaterial = new THREE.MeshBasicMaterial({
 });
 var earth = new THREE.Mesh(geometry, earthMaterial);
 earth.position.set(0, 0, 0);
+earth.rotateY((Math.PI / 180) * -90);
+
 scene.add(earth);
 ////////////////////////
-var customMaterial = new THREE.ShaderMaterial({
+var earthGlowMaterial = new THREE.ShaderMaterial({
     uniforms: {
         "c": {
             type: "f",
@@ -164,88 +73,253 @@ var customMaterial = new THREE.ShaderMaterial({
     blending: THREE.AdditiveBlending,
     transparent: true
 });
-var earthGlow = new THREE.Mesh(geometry.clone(), customMaterial.clone());
+var earthGlow = new THREE.Mesh(geometry.clone(), earthGlowMaterial.clone());
 
 earthGlow.position = earth.position;
-earthGlow.scale.multiplyScalar(1.1);
+earthGlow.scale.multiplyScalar(1.01);
 scene.add(earthGlow);
 
-//*************
-var particleTexture = THREE.ImageUtils.loadTexture('img/spark.png');
-particleGroup = new THREE.Object3D();
-particleAttributes = {
-    startSize: [],
-    startPosition: [],
-    randomness: []
-};
 
-var totalParticles = 40;
-var radiusRange = 50;
 
-var x = -100,
-    y = 0,
-    z = 0;
-for (var i = 0; i < totalParticles; i++) {
-    var spriteMaterial = new THREE.SpriteMaterial({
-        map: particleTexture,
-        useScreenCoordinates: false,
-        color: 0xffffff
+
+
+
+
+var GOLBAL_Points = [];
+//
+
+
+var particleGroup;
+
+/**
+ * convert the lat and lon to the point on the erath
+ **/
+function latlonToPoint(lat, lon, radius) {
+    var lonY = (lon / 90) * radius;
+    var logRadius = Math.sqrt(Math.pow(radius, 2) - Math.pow(lonY, 2));
+    var latRotation = (Math.PI / 180) * lat;
+
+    var startX = logRadius * Math.sin(latRotation);
+    var startY = lonY;
+    var startZ = logRadius * Math.cos(latRotation);
+
+    return new THREE.Vector3(startX, startY, startZ);
+}
+
+/**
+ * create uniqueID
+ */
+var uniqueId = (function() {
+    var count = 0;
+    return function() {
+        var timeStamp = +new Date();
+        var countStr = count.toString();
+        var temp = [countStr];
+        for (var i = 0; i < 5 - countStr.length; i++) {
+            temp.unshift('0');
+        }
+        // console.log(temp,'??');
+        var id = timeStamp + temp.join('');
+        count++;
+        if (count >= 99999) {
+            count = 0;
+        }
+        return id;
+    }
+})();
+
+function addLine(obj) {
+    var id = uniqueId();
+    GLOBAL.line = GLOBAL.line || {};
+    GLOBAL.line[id] = {};
+    //get the point;
+    var deep = 10;
+    var deeplat = (obj.end[0] - obj.start[0]) / deep;
+    var deeplon = (obj.end[1] - obj.start[1]) / deep;
+
+    var points = [];
+    // 
+    for (var i = 0; i < deep; i++) {
+        // latlonToPoint[]
+        var lat = obj.start[0] + deeplat * i;
+        var lon = obj.start[1] + deeplon * i;
+        // console.log(lat, lon)
+        var C = 1.1;
+
+        points.push(latlonToPoint(lat, lon, GLOBAL.earthRadius * 1.05));
+    }
+
+    var curve = new THREE.SplineCurve3(points);
+
+    //draw line
+    var geometry = new THREE.Geometry();
+    geometry.vertices = curve.getPoints(100);
+
+    GLOBAL.line[id].info = GLOBAL.line[id].info || {};
+    GLOBAL.line[id].info.vertices = geometry.vertices;
+
+    //TODO REMOVE
+    GOLBAL_Points.push(geometry.vertices);
+
+    var material = new THREE.LineBasicMaterial({
+        color: '#00ff00'
     });
 
-    var sprite = new THREE.Sprite(spriteMaterial);
-    sprite.scale.set(20, 20, 1.0); // imageWidth, imageHeight
-    sprite.position.set(x += 5, 0, 0);
-    // for a cube:
-    // sprite.position.multiplyScalar( radiusRange );
-    // for a solid sphere:
-    // sprite.position.setLength( radiusRange * Math.random() );
-    // for a spherical shell:
-    // sprite.position.setLength(radiusRange * (Math.random() * 0.1 + 0.9));
-
-    // sprite.color.setRGB( Math.random(),  Math.random(),  Math.random() ); 
-    sprite.material.color.setHSL(Math.random(), 0.9, 0.7);
-    // sprite.material.color.setHSL(0.3, 0.7, 0.9);
-
-    // sprite.opacity = 0.80; // translucent particles
-    sprite.material.blending = THREE.AdditiveBlending; // "glowing" particles
+    var curveObject = new THREE.Line(geometry, material);
+    scene.add(curveObject);
+    //
 
 
-    particleGroup.add(sprite);
-    // add variable qualities to arrays, if they need to be accessed later
-    particleAttributes.startPosition.push(sprite.position.clone());
-    particleAttributes.randomness.push(Math.random());
+    //create a ball
+    var ball = new THREE.SphereGeometry(5, 50, 50);
+    var ballGlowMaterial = new THREE.ShaderMaterial({
+        uniforms: {
+            "c": {
+                type: "f",
+                value: 0.0,
+            },
+            "p": {
+                type: "f",
+                value: 2.0
+            },
+            glowColor: {
+                type: "c",
+                value: new THREE.Color('green')
+            },
+            viewVector: {
+                type: "v3",
+                value: camera.position
+            }
+        },
+        vertexShader: document.getElementById('vertexShader').textContent,
+        fragmentShader: document.getElementById('fragmentShader').textContent,
+        side: THREE.FrontSide,
+        blending: THREE.AdditiveBlending,
+        transparent: true
+    });
+
+
+
+    var ballObject = new THREE.Mesh(ball.clone(), ballGlowMaterial.clone());
+    particleGroup = new THREE.Object3D();
+    particleGroup.add(ballObject);
+
+    ballObject.verIndex = 0;
+    ballObject.totalIndex = GLOBAL.line[id].info.vertices.length;
+    ballObject.speed = obj.speed;
+    GLOBAL.line[id].balls = GLOBAL.line[id].balls || [];
+    GLOBAL.line[id].balls.push(ballObject);
+
+    // console.log(id, GLOBAL.line[id].balls[0].verIndex, '@@@');
+    scene.add(particleGroup);
+    //
 }
-// particleGroup.position.y = 0;
-scene.add(particleGroup);
-//*************
 
+// var obj = {
+//     start: [0, 10],
+//     end: [40, -90],
+//     speed: ''
+// }
 
+// addLine(obj);
 
+// var obj = {
+//     start: [-40, 10],
+//     end: [80, -90],
+//     speed: ''
+// }
 
+// addLine(obj);
 
+for (var i = 0; i < 5; i++) {
+
+    var obj = {
+            start: [parseInt(Math.random() * 360 - 180), parseInt(Math.random() * 180 - 90)],
+            end: [parseInt(Math.random() * 360 - 180), parseInt(Math.random() * 180 - 90)],
+            speed: parseInt(Math.random() * 4000) + 2000
+        }
+        // console.log(obj);
+    addLine(obj);
+}
+
+// console.log(GLOBAL.line);
 
 //readin the sence
-var clock = new THREE.Clock();
+
+
+// var theindex = 0;
+var clock = new THREE.Clock(true);
+clock.start();
 
 function render() {
-    for (var c = 0; c < particleGroup.children.length; c++) {
-        var sprite = particleGroup.children[c];
-
-        particleAttributes.startPosition[c].x += (1 + Math.random() * 2);
-        if (particleAttributes.startPosition[c].x > 200) {
-            particleAttributes.startPosition[c].x = 100;
-        }
-        // particleAttributes.startPosition[c].y
-        // particleAttributes.startPosition[c].z
-
-        sprite.position.x = particleAttributes.startPosition[c].x;
-        sprite.position.y = particleAttributes.startPosition[c].y;
-        sprite.position.z = particleAttributes.startPosition[c].z;
-    }
-    // console.log(clock.getElapsedTime());
     requestAnimationFrame(render);
     renderer.render(scene, camera);
     controls.update();
+    readenBall();
     earthGlow.material.uniforms.viewVector.value = new THREE.Vector3().subVectors(camera.position, earthGlow.position);
 }
 render();
+
+
+// var lastTime = +new Date();
+
+
+// console.log('XXXXX', lastTime)
+
+function readenBall() {
+    // var now = +new Date();
+    // var time = now - lastTime||now;
+    // console.log();
+    // lastTime = now;
+
+    // var speed = parseInt(theindex / 3);
+    // return false;
+    var timePass = clock.getDelta();
+    for (var i in GLOBAL.line) {
+        // console.log(GLOBAL.line[i].info.vertices.length);
+        var line = GLOBAL.line[i];
+        var balls = line.balls;
+        var ballsLen = balls.length;
+        for (var j = 0; j < ballsLen; j++) {
+            var ball = balls[0];
+            // console.log(ball.speed);
+            var step = ball.totalIndex / ball.speed;
+            ball.verIndex += timePass * 1000 * step;
+            // console.log(ballIndex, ball.totalIndex,ballIndex >= ball.totalIndex);
+            var ballIndex = parseInt(ball.verIndex);
+            // console.log(ballIndex, ball.totalIndex,ballIndex >= ball.totalIndex);‘
+            console.log(ballIndex, ball.totalIndex);
+            var vertext = line.info.vertices[ballIndex];
+            if (vertext) {
+                ball.position.x = vertext.x;
+                ball.position.y = vertext.y;
+                ball.position.z = vertext.z;
+            }
+
+            ball.material.uniforms.viewVector.value = new THREE.Vector3().subVectors(camera.position, ball.position);
+            // console.log(line.info.vertices[ball.verIndex]);
+            // console.log(balls[0].verIndex++)
+
+            if (ballIndex >= ball.totalIndex - 1) {
+                // console.log('XXXXXXX')
+                ball.verIndex = 0;
+            }
+        }
+
+    }
+
+    // particleGroup
+    // console.log(theindex);
+
+    // for (var c = 0; c < particleGroup.children.length; c++) {
+    //     theindex++;
+    //     var sprite = particleGroup.children[c];
+    //     sprite.material.uniforms.viewVector.value = new THREE.Vector3().subVectors(camera.position, sprite.position);
+    //     if (speed >= GOLBAL_Points[0].length - 1) {
+    //         theindex = 0;
+    //     };
+    //     sprite.position.x = GOLBAL_Points[0][speed].x;
+    //     sprite.position.y = GOLBAL_Points[0][speed].y;
+    //     sprite.position.z = GOLBAL_Points[0][speed].z;
+    // }
+}
