@@ -25,17 +25,21 @@
 
 
 
+
 <script id="shader-vs" type="x-shader/x-vertex">
 
-attribute vec3 aVertexPosition;
-attribute vec3 aVertexNormal;
-attribute vec4 aVertexColor;
+attribute vec3 aVertexPosition;  //顶点位置
+attribute vec3 aVertexNormal;   //顶点法线
+attribute vec4 aVertexColor;    //顶点颜色
 
-uniform mat4 uMVMatrix;
-uniform mat4 uPMatrix;
-uniform mat4 uNMatrix;
+uniform mat4 uMVMatrix; //模型-视见转换矩阵
+uniform mat4 uPMatrix;  //透视矩阵
+uniform mat4 uNMatrix;  //法线矩阵
+
+//lights
 uniform vec3 uLightPosition;
-uniform vec4 uMaterialDiffuse;
+
+uniform vec4 uMaterialDiffuse;   //object color
 uniform bool uWireframe;
 uniform bool uPerVertexColor;
 uniform bool uUpdateLight;
@@ -98,8 +102,12 @@ uniform vec4 uLightAmbient;
 uniform vec4 uLightDiffuse;
 uniform vec4 uLightSpecular;
 uniform vec4 uMaterialAmbient;
-uniform vec4 uMaterialDiffuse;
+uniform vec4 addObject;
 uniform vec4 uMaterialSpecular;
+uniform vec4 uMaterialDiffuse; 
+
+
+
 uniform float uShininess;       
 
 varying vec3 vNormal;
@@ -115,37 +123,40 @@ void main(void) {
         vec3 N = normalize(vNormal);
 
         //Lambert's cosine law
+        // float lambertTerm = 1.0;
         float lambertTerm = dot(N, -L);
 
         //Ambient Term  
-        vec4 Ia = uLightAmbient * uMaterialAmbient;
-
+        vec4 Ia = uLightAmbient * uMaterialAmbient;  //环境光 = 漫反环境颜色 * 材质环境颜色
         //Diffuse Term
-        vec4 Id = vec4(0.0, 0.0, 0.0, 1.0);
-
+        vec4 Id = vec4(0.0, 0.0, 0.0, 1.0);     //漫反射 =  
         //Specular Term
-        vec4 Is = vec4(0.0, 0.0, 0.0, 1.0);
+        vec4 Is = vec4(0.0, 0.0, 0.0, 1.0);     //镜面光 = 
 
         if (lambertTerm > 0.0) {
             Id = uLightDiffuse * uMaterialDiffuse * lambertTerm;
-            vec3 E = normalize(vEyeVec);
-            vec3 R = reflect(L, N);
-            float specular = pow(max(dot(R, E), 0.0), uShininess);
+            vec3 E = normalize(vEyeVec);    //视见向量或者相机向量
+            vec3 R = reflect(L, N);     //反射后的光照向量
+            float specular = pow(max(dot(R, E), 0.0), uShininess);  //镜面系数  uShininess光泽度
             Is = uLightSpecular * uMaterialSpecular * specular;
         }
 
         //Final color
-        vec4 finalColor = Ia + Id + Is;
-        finalColor.a = 1.0;
-        gl_FragColor = finalColor;
+
+        // vec4 finalColor = Ia + Id + Is; //环境光 + 漫反射光 + 镜面光
+        // finalColor.a = uMaterialDiffuse.a;
+        // gl_FragColor = finalColor;
+
+        gl_FragColor = vec4(Ia.rbg + Id.rgb+Is.rgb,uMaterialDiffuse.a);
     }
 
 }
 
 </script>
 
+
 <script id='code-js' type="text/javascript">
-var updateLightPosition = false;
+var updateLightPosition = true;
 var camera = null;
 var interactor = null;
 var transforms = null;
@@ -157,9 +168,25 @@ var sceneTime = 0.0;
 
 function configure() {
     gl.clearColor(0.3, 0.3, 0.3, 1.0);
-    gl.clearDepth(100.0);
+    gl.clearDepth(1.0);
+    
+    //Enabling depth testing
     gl.enable(gl.DEPTH_TEST);
-    gl.depthFunc(gl.LEQUAL);
+    gl.depthFunc(gl.LESS);
+    
+    //Enabling alpha blending
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+
+    gl.enable(gl.CULL_FACE);
+    // gl.enable(gl.FACE_CULLING);
+    // gl.cullFace(gl.BACK);
+
+
+
+    // gl.disable(gl.DEPTH_TEST);
+    // gl.enable(gl.BLEND);
+    // gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
     //Creates and sets up the camera location
     //CAMERA_ORBITING_TYPE
@@ -178,13 +205,23 @@ function configure() {
     //init transforms
     transforms.init();
 
-    //create program variable that maps the uniform uTranslation
-    prg.uTranslation = gl.getUniformLocation(prg, "uTranslation");
-    gl.uniform3fv(prg.uTranslation, [0, 0, 0]);
+    //Program
+    attributeList = [];
 
-    //create program variable that maps the uniform uTranslate
-    prg.uTranslate = gl.getUniformLocation(prg, "uTranslate");
-    gl.uniform1i(prg.uTranslate, false);
+    uniformList = [ "uTranslation", 
+                    "uTranslate",
+                    ];
+    
+    Program.load(attributeList, uniformList);
+    
+
+    gl.uniform3fv(Program.uTranslation,   [0,10,0]);
+    gl.uniform1i(Program.uTranslate, false);
+
+    //light
+    gl.uniform3fv(Program.uLightPosition,   [0,5,20]);
+    gl.uniform3fv(Program.uLightAmbient,    [1.0,1.0,1.0,1.0]);
+    gl.uniform4fv(Program.uLightDiffuse,    [1.0,1.0,1.0,1.0]);
 
 }
 
@@ -194,17 +231,17 @@ function configure() {
  */
 function load() {
     Floor.build(80, 2);
-    Axis.build(82);
-    // Scene.addObject(Floor);
-    Scene.addObject(Axis);
-
-    Scene.addObject(createBall(10,0,0,0,30,30));
-    // var points=[6.0,6.0,0.0,
-    //             6.0,-6.0,0.0,
-    //             0.0,0.0,0.0,
-    //             -6.0,-6.0,0.0,
-    //             -6.0,6.0,0.0]
-    // Scene.addObject(drawArea(points));
+    // Axis.build(82);
+    Scene.addObject(Floor);
+    // Scene.addObject(Axis);
+    var ball = createBall(10,0,0,0,30,30,{
+        "alias":"ball",
+        "wireframe": false,
+        "diffuse"  : [1.0,0.0,0.0,0.4]
+    });
+    ball.diffuse[3] = 0.2;
+    console.log(ball);
+    Scene.addObject(ball);
 
     // Scene.loadObject('models/geometry/ball.json','ball');
     // Scene.loadObject('models/geometry/flag.json','flag');
@@ -222,19 +259,33 @@ function load() {
 //     }
 // }
 
-function createBall(r, x, y, z, xd, yd) {
-    var color=[1.0,0.0,0.0,1.0];
+/**
+  * createBall
+  * r:radius
+  * x,y,x the center
+  * xd,yd 细分
+    options = {
+        "alias":"ball",
+        "wireframe": false,
+        "diffuse"  : [1.0,1.0,0.0,1.0]
+    }
+  */
+function createBall(r, x, y, z, xd, yd,options) {
+    options = options||{};
+    var color=[0.0,0.0,0.0,1.0];
 
     var Info = [];
     //Y
     var YsD = 2 * r / (yd + 1);
     var Ytop = y + r;
 
+    var yVO= Math.PI/(yd+1);
+
     Info.push({y:Ytop});
     for (var i = 0; i < yd; i++) {
         var yV = Ytop - YsD * (i + 1);
+        var yV = r*Math.cos(yVO*(i+1)).toFixed(4);
         Info.push({y:yV});
-        console.log(yV);
     }
     Info.push({y:y - r});
 
@@ -282,29 +333,28 @@ function createBall(r, x, y, z, xd, yd) {
         var key=Info[i].points;
         for(var j=0,jLen=key.length;j<jLen;j++){
             // console.log(key[j]);
-
-            vert.push(key[j].x)
-            vert.push(key[j].y)
-            vert.push(key[j].z)
+            vert.push(key[j].x.toFixed(4))
+            vert.push(key[j].y.toFixed(4))
+            vert.push(key[j].z.toFixed(4))
         }
-        // console.log()
     }
 
     var indi=[];
-    var scalars=[];
+    // var scalars=[];
     for(var i=0;i<vert.length/3;i++){
+        // console.log(i)
         indi.push(i);
-        scalars.push(color);
+        // scalars.push(color);
     }
 
     
     indi=[];
-    // addIndiByLine(3,indi);    
-    // addIndiByLine(6,indi);    
 
     for(var i=1;i<=yd;i++){
         addIndiByLine(i,indi);    
     }
+    //
+    // addIndiByLine(2,indi);    
 
     function addIndiByLine(line,arr){
         var start = (line-1)*xd +1;
@@ -312,13 +362,17 @@ function createBall(r, x, y, z, xd, yd) {
         var max = yd * xd + 1;
 
         for(var i=start;i<end;i++){
+            var next = i + 1;
+            next = next >= end ? start : next;
+            var top = i - xd;
+            top = top < 0 ? 0 : top;
             //up 
             arr.push(i);
-            arr.push((i+1)>=end?start:(i+1));
+            arr.push(next);
             arr.push((i-xd)<0?0:(i-xd));
             //down
+            arr.push(next);
             arr.push(i);
-            arr.push((i+1)>=end?start:(i+1));
             var nextRow=i+xd+1;
             var nextMax=end+xd-1;
             var nextPoint=nextRow>nextMax?end:nextRow;
@@ -327,12 +381,15 @@ function createBall(r, x, y, z, xd, yd) {
         }
     }
 
+    
+
     return {
-        "wireframe": true,
+        "alias":options.alias||'',
+        "wireframe": options.wireframe||false,
         "vertices":vert,
         "indices": indi,
-        "scalars":scalars,
-         "diffuse"  : [1.0,0.0,0.0,1.0]
+        // "scalars":scalars,
+        "diffuse"  : options.diffuse||[1.0,1.0,1.0,1.0]
     }
 }
 
@@ -347,7 +404,6 @@ function draw() {
 
     try {
         gl.uniform1i(prg.uUpdateLight, updateLightPosition);
-
 
         for (var i = 0; i < Scene.objects.length; i++) {
 
@@ -375,12 +431,12 @@ function draw() {
             gl.bindBuffer(gl.ARRAY_BUFFER, object.vbo);
             gl.vertexAttribPointer(prg.aVertexPosition, 3, gl.FLOAT, false, 0, 0);
             gl.enableVertexAttribArray(prg.aVertexPosition);
-
-            if (!object.wireframe) {
+            // console.log(object.nbo)
+            // if (!object.wireframe) {
                 gl.bindBuffer(gl.ARRAY_BUFFER, object.nbo);
                 gl.vertexAttribPointer(prg.aVertexNormal, 3, gl.FLOAT, false, 0, 0);
                 gl.enableVertexAttribArray(prg.aVertexNormal);
-            }
+            // }
 
             if (object.perVertexColor) {
                 gl.bindBuffer(gl.ARRAY_BUFFER, object.cbo);
@@ -411,15 +467,11 @@ function draw() {
 var app = null;
 
 function runWebGLApp() {
-
     app = new WebGLApp("canvas-element-id");
     app.configureGLHook = configure;
     app.loadSceneHook = load;
     app.drawSceneHook = draw;
     app.run();
-
-    // startAnimation();
-
 }
 </script>
 

@@ -38,6 +38,7 @@
 attribute vec3 aVertexPosition;
 attribute vec3 aVertexNormal;
 attribute vec4 aVertexColor;
+attribute vec2 aVertexTextureCoords;
 
 uniform bool uUseVertexColor;
 uniform vec4 uMaterialDiffuse;
@@ -57,6 +58,8 @@ uniform bool uUseLambert;
 
 //varyings
 varying vec4 vColor;
+varying vec2 vTextureCoord;
+
 
 void main(void) {
 
@@ -92,6 +95,7 @@ void main(void) {
  
  //Final vertex position
  gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
+ vTextureCoord=aVertexTextureCoords;
 
 }	
 </script>
@@ -104,6 +108,7 @@ precision highp float;
 //geometry
 uniform vec4 uMaterialDiffuse;
 uniform bool uWireframe;
+uniform sampler2D uSampler;
 
 //varying
 varying vec4 vColor;
@@ -111,7 +116,7 @@ varying vec2 vTextureCoord;
 
 void main(void)
 {	
-	gl_FragColor  = vColor;
+	gl_FragColor  = vColor * texture2D(uSampler,vTextureCoord);
 }
 </script>
 
@@ -121,6 +126,7 @@ var camera = null;
 var interactor = null;
 var transforms = null;
 var useVertexColors = false;
+var texture = null;
 
 function configure(){
     gl.clearColor(0.3,0.3,0.3, 1.0);
@@ -133,10 +139,10 @@ function configure(){
     camera = new Camera(CAMERA_ORBITING_TYPE);
     camera.goHome([0,0,4]);
     camera.setFocus([0.0,0.0,0.0]);
-	camera.setAzimuth(45);
-	camera.setElevation(-30);
+	// camera.setAzimuth(45);
+	// camera.setElevation(-30);
     camera.hookRenderer = draw;
-    
+
     //Creates and sets up the mouse and keyboard interactor
     interactor = new CameraInteractor(camera, document.getElementById('canvas-element-id'));
     
@@ -149,7 +155,8 @@ function configure(){
 	//Program
 	attributeList = ["aVertexPosition",
 					"aVertexNormal",
-					"aVertexColor"];
+					"aVertexColor",
+					"aVertexTextureCoords"];
 
 	uniformList = [	"uPMatrix", 
 					"uMVMatrix", 
@@ -162,7 +169,8 @@ function configure(){
 					"uWireframe",
 					"uAlpha",
 					"uUseVertexColor",
-					"uUseLambert"
+					"uUseLambert",
+					"uSampler"
 					];
 	
 	
@@ -174,6 +182,22 @@ function configure(){
 	gl.uniform1f(Program.uAlpha, 1.0);
 	gl.uniform1i(Program.uUseVertexColor, useVertexColors);
 	gl.uniform1i(Program.uUseLambert, true);
+
+	    //texture
+    texture = gl.createTexture();
+    var image = new Image();
+    image.onload=function(){
+    	// setTimeout(function(){
+    	gl.bindTexture(gl.TEXTURE_2D,texture);
+    	gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,image);
+    	gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.NEAREST);
+    	gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.NEAREST);
+		gl.bindTexture(gl.TEXTURE_2D, null);
+	// },4000)
+    	
+	}
+	image.src = 'textures/webgl.png';
+	// alert(gl.getParameter(gl.MAX_COMBINED_TEXTURE_IMAGE_UNITS));
 }
 
 
@@ -231,6 +255,16 @@ function draw() {
 				gl.vertexAttribPointer(Program.aVertexColor, 4, gl.FLOAT, false, 0, 0);
 				
 			}
+
+			if(object.texture_coords){
+            	gl.enableVertexAttribArray(Program.aVertexTextureCoords);
+            	gl.bindBuffer(gl.ARRAY_BUFFER,object.tbo);
+            	gl.vertexAttribPointer(Program.aVertexTextureCoords,2,gl.FLOAT,false,0,0);
+
+            	gl.activeTexture(gl.TEXTURE0);
+            	gl.bindTexture(gl.TEXTURE_2D,texture);
+            	gl.uniform1i(Program.uSampler,0);
+            }
 			
 			if(!object.wireframe){
 				gl.bindBuffer(gl.ARRAY_BUFFER, object.nbo);
@@ -245,6 +279,8 @@ function draw() {
             else{
                 gl.drawElements(gl.TRIANGLES, object.indices.length, gl.UNSIGNED_SHORT,0);
             }
+
+            
 			
             gl.bindBuffer(gl.ARRAY_BUFFER, null);
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);

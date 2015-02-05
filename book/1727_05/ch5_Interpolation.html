@@ -175,6 +175,7 @@ function close(c1, c0,r){
 }
 
 function doLinearInterpolation(){
+
     position = [];
     var start = CONTROL_POINTS[0];
     var end = CONTROL_POINTS[CONTROL_POINTS.length-1];
@@ -191,13 +192,17 @@ function doLinearInterpolation(){
         var s = is/ISTEPS;
         position.push([X0*(1-s)+X1*s,Y0*(1-s)+Y1*s,Z0*(1-s)+Z1*s]);
     }
+    // console.log('!!!!',position)
 }
 
 function doLagrangeInterpolation(){
     position = [];
     
     var N = CONTROL_POINTS.length;
+
     var dT = ISTEPS/(N-1);
+
+    // console.log(dT);   
     
     var D = [];
 
@@ -208,6 +213,7 @@ function doLagrangeInterpolation(){
             D[i] *= dT*(i - j);
         }
     }
+    console.log(D)
     
     var Lk = function(x,axis){
         var R = [];
@@ -383,63 +389,57 @@ function draw() {
 			
 			transforms.calculateModelView();           
             transforms.push();
-                if (object.alias == 'ball'){
-                    if (position[sceneTime] != undefined){
-                        mat4.translate(transforms.mvMatrix,position[sceneTime]);
+            if (object.alias == 'ball'){
+                if (position[sceneTime] != undefined){
+                    mat4.translate(transforms.mvMatrix,position[sceneTime]);
+                }
+            }else if (object.alias == 'flagInicio'){
+                mat4.translate(transforms.mvMatrix, CONTROL_POINTS[0]);
+            }else if (object.alias == 'flagFin'){
+                mat4.translate(transforms.mvMatrix, CONTROL_POINTS[4]);
+            }else if (object.alias == 'flagControl1'){
+                if (INTERPOLATION_TYPE != I_LINEAR){
+                    mat4.translate(transforms.mvMatrix, CONTROL_POINTS[1]);
+                    if (close(CONTROL_POINTS[1], position[sceneTime],3)){
+                        object.diffuse = [0.92,0.92,0.4,1.0];
+                    }
+                    else {
+                        object.diffuse = [0.4,0.4,0.4,1.0];
                     }
                 }
-                else if (object.alias == 'flagInicio'){
-                    mat4.translate(transforms.mvMatrix, CONTROL_POINTS[0]);
+                else{
+                    transforms.pop();
+                    continue;
                 }
-                else if (object.alias == 'flagFin'){
-                    mat4.translate(transforms.mvMatrix, CONTROL_POINTS[4]);
-                }
-                
-                else if (object.alias == 'flagControl1'){
-                    if (INTERPOLATION_TYPE != I_LINEAR){
-                        mat4.translate(transforms.mvMatrix, CONTROL_POINTS[1]);
-                        if (close(CONTROL_POINTS[1], position[sceneTime],3)){
-                            object.diffuse = [0.92,0.92,0.4,1.0];
-                        }
-                        else {
-                            object.diffuse = [0.4,0.4,0.4,1.0];
-                        }
+            }else if (object.alias == 'flagControl2'){
+                if (INTERPOLATION_TYPE != I_LINEAR){
+                    mat4.translate(transforms.mvMatrix, CONTROL_POINTS[2]);
+                    if (close(CONTROL_POINTS[2], position[sceneTime],3)){
+                        object.diffuse = [0.92,0.92,0.4,1.0];
                     }
-                    else{
-                        transforms.pop();
-                        continue;
+                    else {
+                        object.diffuse = [0.4,0.4,0.4,1.0];
                     }
                 }
-                else if (object.alias == 'flagControl2'){
-                    if (INTERPOLATION_TYPE != I_LINEAR){
-                        mat4.translate(transforms.mvMatrix, CONTROL_POINTS[2]);
-                        if (close(CONTROL_POINTS[2], position[sceneTime],3)){
-                            object.diffuse = [0.92,0.92,0.4,1.0];
-                        }
-                        else {
-                            object.diffuse = [0.4,0.4,0.4,1.0];
-                        }
+                else{
+                    transforms.pop();
+                    continue;
+                }
+            }else if (object.alias == 'flagControl3'){
+                if (INTERPOLATION_TYPE != I_LINEAR){
+                    mat4.translate(transforms.mvMatrix, CONTROL_POINTS[3]);
+                    if (close(CONTROL_POINTS[3], position[sceneTime],3)){
+                       object.diffuse = [0.92,0.92,0.4,1.0];
                     }
-                    else{
-                        transforms.pop();
-                        continue;
+                    else {
+                        object.diffuse = [0.4,0.4,0.4,1.0];
                     }
                 }
-                else if (object.alias == 'flagControl3'){
-                    if (INTERPOLATION_TYPE != I_LINEAR){
-                        mat4.translate(transforms.mvMatrix, CONTROL_POINTS[3]);
-                        if (close(CONTROL_POINTS[3], position[sceneTime],3)){
-                           object.diffuse = [0.92,0.92,0.4,1.0];
-                        }
-                        else {
-                            object.diffuse = [0.4,0.4,0.4,1.0];
-                        }
-                    }
-                    else{
-                        transforms.pop();
-                        continue;
-                    }
+                else{
+                    transforms.pop();
+                    continue;
                 }
+            }
             
             transforms.setMatrixUniforms();
             transforms.pop();

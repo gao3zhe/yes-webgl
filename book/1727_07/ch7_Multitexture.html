@@ -58,13 +58,14 @@ precision highp float;
 
 //sampler
 uniform sampler2D uSampler;
+uniform sampler2D uSampler1;
 
 //varying
 varying vec2 vTextureCoord;
 
 void main(void)
 {	
-	gl_FragColor = texture2D(uSampler, vTextureCoord);
+	gl_FragColor = texture2D(uSampler, vTextureCoord) * texture2D(uSampler1, vTextureCoord);
 }
 </script>
 
@@ -75,6 +76,7 @@ var interactor = null;
 var transforms = null;
 var useVertexColors = false;
 var texture = null;
+var texture2 = null;
 
 function configure(){
     gl.clearColor(0.3,0.3,0.3, 1.0);
@@ -119,7 +121,8 @@ function configure(){
 					"uAlpha",
 					"uUseVertexColor",
 					"uUseLambert",
-					"uSampler"
+					"uSampler",
+					"uSampler1"
 					];
 	
 	
@@ -135,6 +138,9 @@ function configure(){
 	//Init textures
 	texture = new Texture();
 	texture.setImage('textures/webgl.png');
+
+	texture2 = new Texture();
+	texture2.setImage('textures/light.png');
 }
 
 
@@ -200,6 +206,10 @@ function draw() {
 				gl.activeTexture(gl.TEXTURE0);
 				gl.bindTexture(gl.TEXTURE_2D, texture.tex);
 				gl.uniform1i(Program.uSampler, 0);
+
+				gl.activeTexture(gl.TEXTURE1);
+				gl.bindTexture(gl.TEXTURE_2D, texture2.tex);
+				gl.uniform1i(Program.uSampler1, 1);
 			}
 			
             

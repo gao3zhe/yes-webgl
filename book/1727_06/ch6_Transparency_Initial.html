@@ -115,10 +115,13 @@ var camera = null,
 function configure(){
     gl.clearColor(0.3,0.3,0.3,1.0);
     gl.clearDepth(1.0);
-    
+
     //Enabling depth testing
     gl.enable(gl.DEPTH_TEST);
     gl.depthFunc(gl.LESS);
+
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
     
     
     //Creates and sets up the camera location

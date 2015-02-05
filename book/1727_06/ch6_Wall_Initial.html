@@ -46,10 +46,12 @@ uniform mat4 uNMatrix;
 uniform vec4 uMaterialDiffuse;
 uniform vec3 uPositionRedLight;
 uniform vec3 uPositionGreenLight;
+uniform vec3 uPositionBlueLight;
 //varyings
 varying vec3 vNormal;
 varying vec3 vRedRay;
 varying vec3 vGreenRay;
+varying vec3 vBlueRay;
 
 
 void main(void) {
@@ -63,11 +65,12 @@ void main(void) {
  //Transformed light position
  vec4 redPosition = uMVMatrix * vec4(uPositionRedLight,1.0);
  vec4 greenPosition = uMVMatrix * vec4(uPositionGreenLight,1.0);
+ vec4 bluePosition = uMVMatrix * vec4(uPositionBlueLight,1.0);
 
  //Light position
  vRedRay   = vertex.xyz-redPosition.xyz;
  vGreenRay = vertex.xyz-greenPosition.xyz;
-
+ vBlueRay  = vertex.xyz-bluePosition.xyz;
  //Final vertex position
  gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
 
@@ -88,11 +91,13 @@ uniform bool uLightSource;
 uniform vec4 uLightAmbient;
 uniform vec4 uDiffuseRedLight;
 uniform vec4 uDiffuseGreenLight;
+uniform vec4 uDiffuseBlueLight;
 uniform float uCutOff;   
 //varyings
 varying vec3 vNormal;
 varying vec3 vRedRay;
 varying vec3 vGreenRay;
+varying vec3 vBlueRay;
 varying vec4 vFinalColor;
 
 void main(void)
@@ -107,6 +112,7 @@ void main(void)
 		//Diffuse Term
     	vec4 Id1 = vec4(0.0,0.0,0.0,1.0);
 		vec4 Id2 = vec4(0.0,0.0,0.0,1.0);
+		vec4 Id3 = vec4(0.0,0.0,0.0,1.0);
 		
 		//Normalized normal
     	vec3 N = normalize(vNormal);
@@ -114,19 +120,23 @@ void main(void)
     	//Lambert's cosine law
     	float lambertTermOne	= dot(N,-normalize(vRedRay));
 		float lambertTermTwo	= dot(N,-normalize(vGreenRay));
+		float lambertTermThree	= dot(N,-normalize(vBlueRay));
 
 		//Calculate diffuse contribution (per light)
 		if (lambertTermOne > uCutOff){
-    	
         	Id1 = uDiffuseRedLight * uMaterialDiffuse * lambertTermOne; 
     	}
 		
 		if(lambertTermTwo > uCutOff){
 			Id2 = uDiffuseGreenLight * uMaterialDiffuse * lambertTermTwo;
 		}
+
+		if(lambertTermThree > uCutOff){
+			Id3 = uDiffuseBlueLight * uMaterialDiffuse * lambertTermThree;
+		}
 	
     	//Final color
-    	vec4 finalColor = Ia + Id1 + Id2;
+    	vec4 finalColor = Ia + Id1 + Id2 + Id3;
     	finalColor.a = 1.0;
     	gl_FragColor = finalColor;
     }
@@ -174,10 +184,15 @@ function configure(){
 	var green = new Light('green');
 	green.setPosition([2.5,3,3]);
 	green.setDiffuse([0.0,1.0,0.0,1.0]);
+
+	var blue = new Light('blue');
+	blue.setPosition([-2.5,3,3]);
+	blue.setDiffuse([0.0,0.0,1.0,1.0]);
 	
 	
 	Lights.add(red);
 	Lights.add(green);
+	Lights.add(blue);
 	
 	attributeList = ["aVertexPosition",
 					"aVertexNormal",
@@ -194,6 +209,7 @@ function configure(){
 					"uDiffuseBlueLight",
 					"uPositionRedLight",
 					"uPositionGreenLight",
+					"uPositionBlueLight",
 					"uWireframe",
 					"uLightSource",
 					"uCutOff"
@@ -204,10 +220,12 @@ function configure(){
 	
 	gl.uniform3fv(Program.uPositionRedLight,   red.position);
 	gl.uniform3fv(Program.uPositionGreenLight, green.position);
+	gl.uniform3fv(Program.uPositionBlueLight, blue.position);
 
 	
 	gl.uniform4fv(Program.uDiffuseRedLight,   red.diffuse);
 	gl.uniform4fv(Program.uDiffuseGreenLight, green.diffuse);
+	gl.uniform4fv(Program.uDiffuseBlueLight, blue.diffuse);
 
 	
 	gl.uniform1f(Program.uCutOff, 0.4);
@@ -224,8 +242,8 @@ function load(){
     Floor.build(80,2);
     Scene.addObject(Floor);
     Scene.loadObject('models/geometry/wall.json','wall');
-	Scene.loadObject('models/geometry/smallsph.json','light1');
-	Scene.loadObject('models/geometry/smallsph.json','light2');
+	// Scene.loadObject('models/geometry/smallsph.json','light1');
+	// Scene.loadObject('models/geometry/smallsph.json','light2');
 
 }
 

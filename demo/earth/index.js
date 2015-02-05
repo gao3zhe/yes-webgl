@@ -9,7 +9,7 @@ var GLOBAL = {};
 //new scence camera and renderer
 var scene = new THREE.Scene();
 var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 20000);
-camera.position.set(0, 0, 200);
+camera.position.set(100, 85, -40);
 camera.lookAt(scene.position);
 var renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -19,18 +19,18 @@ document.body.appendChild(renderer.domElement);
 controls = new THREE.OrbitControls(camera, renderer.domElement);
 
 // SKYBOX
-var skyBoxGeometry = new THREE.SphereGeometry(5000, 200, 200);
-skyBoxGeometry = new THREE.BoxGeometry(10000, 10000, 10000);
-var skyBoxTexture = new THREE.ImageUtils.loadTexture('img/sky.jpg');
-skyBoxTexture.magFilter = THREE.NearestFilter;
-skyBoxTexture.mapping = THREE.SphericalReflectionMapping;
-skyBoxTexture.wrapS = THREE.RepeatWrapping;
-skyBoxTexture.wrapT = THREE.RepeatWrapping;
-var skyBoxMaterial = new THREE.MeshBasicMaterial({
-    map: skyBoxTexture,
-    side: THREE.BackSide
-});
-var skyBox = new THREE.Mesh(skyBoxGeometry, skyBoxMaterial);
+// var skyBoxGeometry = new THREE.SphereGeometry(5000, 200, 200);
+// skyBoxGeometry = new THREE.BoxGeometry(10000, 10000, 10000);
+// var skyBoxTexture = new THREE.ImageUtils.loadTexture('img/sky.jpg');
+// skyBoxTexture.magFilter = THREE.NearestFilter;
+// skyBoxTexture.mapping = THREE.SphericalReflectionMapping;
+// skyBoxTexture.wrapS = THREE.RepeatWrapping;
+// skyBoxTexture.wrapT = THREE.RepeatWrapping;
+// var skyBoxMaterial = new THREE.MeshBasicMaterial({
+//     map: skyBoxTexture,
+//     side: THREE.BackSide
+// });
+// var skyBox = new THREE.Mesh(skyBoxGeometry, skyBoxMaterial);
 // scene.add(skyBox);
 
 
@@ -47,6 +47,8 @@ earth.position.set(0, 0, 0);
 earth.rotateY((Math.PI / 180) * -90);
 
 scene.add(earth);
+
+
 ////////////////////////
 var earthGlowMaterial = new THREE.ShaderMaterial({
     uniforms: {
@@ -89,8 +91,10 @@ var particleGroup;
  * convert the lat and lon to the point on the erath
  **/
 function latlonToPoint(lat, lon, radius) {
-    var lonY = (lon / 90) * radius;
+    // var lonY = (lon / 90) * radius;
+    var lonY = Math.sin(lon * Math.PI / 180) * radius;
     var logRadius = Math.sqrt(Math.pow(radius, 2) - Math.pow(lonY, 2));
+
     var latRotation = (Math.PI / 180) * lat;
 
     var startX = logRadius * Math.sin(latRotation);
@@ -122,13 +126,19 @@ var uniqueId = (function() {
     }
 })();
 
+
+var ball = new THREE.SphereGeometry(0.5, 30, 30);
+
 function addLine(obj) {
     var id = uniqueId();
     GLOBAL.line = GLOBAL.line || {};
     GLOBAL.line[id] = {};
     //get the point;
     var deep = 10;
+
+    //TODO FIXELAT
     var deeplat = (obj.end[0] - obj.start[0]) / deep;
+
     var deeplon = (obj.end[1] - obj.start[1]) / deep;
 
     var points = [];
@@ -168,9 +178,9 @@ function addLine(obj) {
     scene.add(curveObject);
     //
 
-
+    // return false
     //create a ball
-    var ball = new THREE.SphereGeometry(2, 50, 50);
+
     var ballColor = '#' + parseInt(Math.random() * 255).toString(16) + parseInt(Math.random() * 255).toString(16) + parseInt(Math.random() * 255).toString(16);
     var ballGlowMaterial = new THREE.ShaderMaterial({
         uniforms: {
@@ -213,16 +223,30 @@ function addLine(obj) {
     }
 }
 
-for (var i = 0; i < 30; i++) {
+
+
+var points = ["117.024967", "36.682785", "116.395645", "39.929986", "117.024967", "36.682785", "117.210813", "39.14393", "117.024967", "36.682785", "116.863806", "38.297615", "117.024967", "36.682785", "121.487899", "31.249162", "117.024967", "36.682785", "117.188107", "34.271553", "117.024967", "36.682785", "113.649644", "34.75661", "117.024967", "36.682785", "114.3162", "30.581084", "117.024967", "36.682785", "117.282699", "31.866942", "117.024967", "36.682785", "120.219375", "30.259244", "117.024967", "36.682785", "108.953098", "34.2778"]
+for (var i = 0; i < points.length; i += 4) {
     var obj = {
-        start: [parseInt(Math.random() * 360 - 180), parseInt(Math.random() * 180 - 90)],
-        end: [parseInt(Math.random() * 360 - 180), parseInt(Math.random() * 180 - 90)],
-        balls: parseInt(Math.random() * 10 + 1),
+        start: [parseInt(points[i]), parseInt(points[i + 1])],
+        end: [parseInt(points[i + 2]), parseInt(points[i + 3])],
+        balls: parseInt(1),
         speed: parseInt(Math.random() * 4000) + 4000
     }
 
     addLine(obj);
 }
+
+// for (var i = 0; i < 100; i++) {
+//     var obj = {
+//         start: [parseInt(Math.random() * 360 - 180), parseInt(Math.random() * 180 - 90)],
+//         end: [parseInt(Math.random() * 360 - 180), parseInt(Math.random() * 180 - 90)],
+//         balls: '0'||parseInt(Math.random() * 10 + 1),
+//         speed: parseInt(Math.random() * 4000) + 4000
+//     }
+
+//     addLine(obj);
+// }
 
 var clock = new THREE.Clock(true);
 clock.start();

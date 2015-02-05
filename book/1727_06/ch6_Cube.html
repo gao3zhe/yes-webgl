@@ -131,9 +131,10 @@ function configure(){
     gl.clearDepth(1.0);
     gl.enable(gl.DEPTH_TEST);
 	gl.depthFunc(gl.LESS);
-	//gl.disable(gl.DEPTH_TEST);
-	//gl.enable(gl.BLEND);
-	//gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+	
+	gl.disable(gl.DEPTH_TEST);
+	gl.enable(gl.BLEND);
+	gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
     
 
     //Creates and sets up the camera location
@@ -190,8 +191,8 @@ function configure(){
 * Loads the scene
 */
 function load(){
-    Scene.loadObject('models/geometry/simpleCube.json','cube1', {hidden:false});
-	Scene.loadObject('models/geometry/complexCube.json','cube2', {hidden:true});
+    Scene.loadObject('models/geometry/simpleCube.json','cube1', {hidden:true});
+	Scene.loadObject('models/geometry/complexCube.json','cube2', {hidden:false});
 }
 
 

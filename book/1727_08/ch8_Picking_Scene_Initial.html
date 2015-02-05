@@ -227,20 +227,40 @@ function configure(){
 
 function positionGenerator(){    
    //To be implemented
+   var x = Math.floor(Math.random()*60);
+   var z = Math.floor(Math.random()*60);
+   var flagX = Math.floor(Math.random()*10);
+   var flagZ = Math.floor(Math.random()*10);
+
+   if (flagX >= 5){ x=-x;}
+   if (flagZ >= 5){ z=-z;}
+   return [x,0,z];
 }
 
 var colorset = {};
 function objectLabelGenerator(){
     //To be implemented
+    var color=[Math.random(),Math.random(),Math.random(),1.0];
+    var key = color[0] + ':' + color[1] + ':' + color[2];
+    if(key in colorset){
+        return uniqueColorGenerator();
+    }else{
+        colorset[key]=true;
+        return color;
+    }
 }
 
 
 function diffuseColorGenerator(i){
     //To be implemented
+    var c=(i%30/60)+0.2;
+    return [c,c,c,1];
 }
 
 function scaleGenerator() {
     //To be implemented
+    var f=Math.random()+0.3;
+    return [f,f,f]
 }
 
 

@@ -31,13 +31,13 @@ uniform mat4 uNMatrix;
 uniform float uShininess;   //shininness
 uniform vec3 uLightDirection;  //light direction
 
-uniform vec4 uLightAmbient;      //light ambient property
-uniform vec4 uLightDiffuse;      //light diffuse property 
-uniform vec4 uLightSpecular;     //light specular property
+uniform vec4 uLightAmbient;      //light ambient property   [环境光亮度？]
+uniform vec4 uLightDiffuse;      //light diffuse property   [light color]
+uniform vec4 uLightSpecular;     //light specular property  [镜面]
 
-uniform vec4 uMaterialAmbient;  //object ambient property
-uniform vec4 uMaterialDiffuse;   //object diffuse property
-uniform vec4 uMaterialSpecular;  //object specular property
+uniform vec4 uMaterialAmbient;  //object ambient property   [材质亮度]
+uniform vec4 uMaterialDiffuse;   //object diffuse property  [材质颜色]
+uniform vec4 uMaterialSpecular;  //object specular property [材质镜面]
 
 varying vec4 vFinalColor;
 
