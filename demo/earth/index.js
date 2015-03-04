@@ -18,20 +18,6 @@ document.body.appendChild(renderer.domElement);
 
 controls = new THREE.OrbitControls(camera, renderer.domElement);
 
-// SKYBOX
-// var skyBoxGeometry = new THREE.SphereGeometry(5000, 200, 200);
-// skyBoxGeometry = new THREE.BoxGeometry(10000, 10000, 10000);
-// var skyBoxTexture = new THREE.ImageUtils.loadTexture('img/sky.jpg');
-// skyBoxTexture.magFilter = THREE.NearestFilter;
-// skyBoxTexture.mapping = THREE.SphericalReflectionMapping;
-// skyBoxTexture.wrapS = THREE.RepeatWrapping;
-// skyBoxTexture.wrapT = THREE.RepeatWrapping;
-// var skyBoxMaterial = new THREE.MeshBasicMaterial({
-//     map: skyBoxTexture,
-//     side: THREE.BackSide
-// });
-// var skyBox = new THREE.Mesh(skyBoxGeometry, skyBoxMaterial);
-// scene.add(skyBox);
 
 
 
@@ -146,9 +132,7 @@ function addLine(obj) {
     for (var i = 0; i < deep; i++) {
         var lat = obj.start[0] + deeplat * i;
         var lon = obj.start[1] + deeplon * i;
-        var C = 1.1;
-
-        points.push(latlonToPoint(lat, lon, GLOBAL.earthRadius * 1.05));
+        points.push(latlonToPoint(lat, lon, GLOBAL.earthRadius * 1.01));
     }
 
     var curve = new THREE.SplineCurve3(points);
@@ -169,7 +153,7 @@ function addLine(obj) {
         color: color,
         opacity: 0.5,
         transparent: true,
-        linewidth: 3,
+        linewidth: 1,
         // linecap:'square'
     });
     // material.transparent = true;
@@ -231,9 +215,8 @@ for (var i = 0; i < points.length; i += 4) {
         start: [parseInt(points[i]), parseInt(points[i + 1])],
         end: [parseInt(points[i + 2]), parseInt(points[i + 3])],
         balls: parseInt(1),
-        speed: parseInt(Math.random() * 4000) + 4000
+        speed: parseInt(Math.random() * 4000) + 1000
     }
-
     addLine(obj);
 }
 
@@ -241,7 +224,7 @@ for (var i = 0; i < points.length; i += 4) {
 //     var obj = {
 //         start: [parseInt(Math.random() * 360 - 180), parseInt(Math.random() * 180 - 90)],
 //         end: [parseInt(Math.random() * 360 - 180), parseInt(Math.random() * 180 - 90)],
-//         balls: '0'||parseInt(Math.random() * 10 + 1),
+//         balls: parseInt(Math.random() * 10 + 1),
 //         speed: parseInt(Math.random() * 4000) + 4000
 //     }
 
@@ -264,19 +247,15 @@ function readenBall() {
 
     var timePass = clock.getDelta();
     for (var i in GLOBAL.line) {
-        // console.log(i);
-
-        // console.log(GLOBAL.line[i].info.vertices.length);
+    
         var line = GLOBAL.line[i];
         var balls = line.balls;
         var ballsLen = balls.length;
-        // console.log(balls.length);
+    
         for (var j = 0; j < ballsLen; j++) {
             var ball = balls[j];
-            // console.log(ball.speed);
             var step = ball.totalIndex / ball.speed;
             ball.verIndex += timePass * 1000 * step;
-            // console.log(ballIndex, ball.totalIndex,ballIndex >= ball.totalIndex);
             var ballIndex = parseInt(ball.verIndex);
 
             if (ballIndex >= ball.totalIndex) {
