@@ -40,14 +40,14 @@ lookupTexture.needsUpdate = true;
 
 
 
-var indexedMapTexture = THREE.ImageUtils.loadTexture("images/map_indexed4.png");
+var indexedMapTexture = THREE.ImageUtils.loadTexture("images/indexed5.png");
 // indexedMapTexture.needsUpdate = true;
 indexedMapTexture.magFilter = THREE.NearestFilter;
 indexedMapTexture.minFilter = THREE.NearestFilter;
 
 
 
-var outlinedMapTexture = THREE.ImageUtils.loadTexture('images/map_outline4.png');
+var outlinedMapTexture = THREE.ImageUtils.loadTexture('images/outline5.png');
 // outlinedMapTexture.needsUpdate = true;
 
 var uniforms = {
@@ -476,7 +476,7 @@ var cityColor = {
     document.addEventListener('mousewheel', onMouseWheel);
 
     function onDocumentMouseMove(event) {
-        // getPickedColor()
+        getPickedColor()
         isClick = false;
         var pmouseX = mouseX;
         var pmouseY = mouseY;
