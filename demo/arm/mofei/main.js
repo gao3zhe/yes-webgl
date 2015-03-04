@@ -396,7 +396,7 @@ function highlightArea(index) {
 
     var ctx = lookupCanvas.getContext('2d');
     ctx.clearRect(0, 0, 256, 1);
-    ctx.fillStyle = 'rgb(40,40,40)';
+    ctx.fillStyle = 'rgb(30,30,30)';
     ctx.fillRect(0, 0, 1, 1);
 
     if (index) {
@@ -416,7 +416,46 @@ function highlightArea(index) {
 }
 
 
+/**
+ * city color
+ */
 
+var cityColor = {
+    "16": "湖南",
+    "17": "陕西",
+    "18": "广东",
+    "19": "吉林",
+    "20": "河北",
+    "21": "湖北",
+    "22": "贵州",
+    "23": "山东",
+    "24": "江西",
+    "25": "河南",
+    "32": "辽宁",
+    "33": "山西",
+    "34": "安徽",
+    "35": "福建",
+    "36": "浙江",
+    "37": "江苏",
+    "38": "重庆",
+    "39": "宁夏",
+    "40": "海南",
+    "41": "台湾",
+    "49": "北京",
+    "50": "天津",
+    "51": "上海",
+    "52": "香港",
+    "53": "澳门",
+    "01": "新疆",
+    "02": "西藏",
+    "03": "内蒙古",
+    "04": "青海",
+    "05": "四川",
+    "06": "黑龙江",
+    "07": "甘肃",
+    "08": "云南",
+    "09": "广西"
+};
 /**
  * for the key events
  */
@@ -437,6 +476,7 @@ function highlightArea(index) {
     document.addEventListener('mousewheel', onMouseWheel);
 
     function onDocumentMouseMove(event) {
+        // getPickedColor()
         isClick = false;
         var pmouseX = mouseX;
         var pmouseY = mouseY;
@@ -449,7 +489,7 @@ function highlightArea(index) {
             var rotateVXD = (mouseY - pmouseY) / 2 * Math.PI / 180;
             //x is coefficient, depend on camera's scale,the big the small;
             var x = zVal > 1 ? (1 / (zVal * 8)) : 1;
-            console.log(zVal);
+            // console.log(zVal);
             rotateVY += rotateVYD * x;
             rotateVX += rotateVXD * x;
             rotating.rotation.x = rotateVX;
@@ -503,10 +543,10 @@ function highlightArea(index) {
         uniforms['outlineLevel'].value = 0;
         lookupTexture.needsUpdate = true;
 
-        renderer.autoClear = false;
-        renderer.autoClearColor = false;
-        renderer.autoClearDepth = false;
-        renderer.autoClearStencil = false;
+        // renderer.autoClear = false;
+        // renderer.autoClearColor = false;
+        // renderer.autoClearDepth = false;
+        // renderer.autoClearStencil = false;
 
         renderer.clear();
         renderer.render(scene, camera);
@@ -523,6 +563,11 @@ function highlightArea(index) {
         var buf = new Uint8Array(4);
         gl.readPixels(mx, my, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, buf);
 
+        // console.log(buf,'@@@')
+        // return false;
+        // {"10":"湖南","11":"陕西","12":"广东","13":"吉林","14":"河北","15":"湖北","16":"贵州","17":"山东","18":"江西","19":"河南","20":"辽宁","21":"山西","22":"安徽","23":"福建","24":"浙江","25":"江苏","26":"重庆","27":"宁夏","28":"海南","29":"台湾","31":"北京","32":"天津","33":"上海","34":"香港","35":"澳门","01":"新疆","02":"西藏","03":"内蒙古","04":"青海","05":"四川","06":"黑龙江","07":"甘肃","08":"云南","09":"广西"}
+
+
         renderer.autoClear = true;
         renderer.autoClearColor = true;
         renderer.autoClearDepth = true;
@@ -535,7 +580,9 @@ function highlightArea(index) {
         uniforms['outlineLevel'].value = 1;
         highlightArea(buf[0]);
         // },5000)
+        var colorIndex = buf[0] < 10 ? '0' + buf[0] : buf[0];
 
+        console.log(colorIndex,cityColor[colorIndex])
 
 
     }

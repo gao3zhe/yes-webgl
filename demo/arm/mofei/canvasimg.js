@@ -16728,35 +16728,57 @@ for (var i in worlds) {
     var citysGeo = worlds[i].geometry.coordinates;
     // console.log(citysGeo);    
     if (worlds[i].geometry.type == 'Polygon') {
-        fill(citysGeo[0], 0);
+        fill(citysGeo[0], '#000000');
     } else {
         // citysGeo = worlds[i].geometry;
 
         // console.log(citysGeo);
         for (var k in citysGeo) {
             console.log(citysGeo[k][0]);
-            fill(citysGeo[k][0], 0);
+            fill(citysGeo[k][0], '#000000');
             // break;
         }
     }
 }
 
 var citys = china.features;
+
 var r = 0;
+var cityNameColor = {};
+
 for (var i in citys) {
+    // console.log();
+    var cityName = citys[i].properties.name;
+    // console.log(cityName);
     var citysGeo = citys[i].geometry.coordinates[0];
     if (citys[i].geometry.type == 'Polygon') {
-        fill(citysGeo, ++r);
+        fill(citysGeo, getColor(cityName));
     } else {;
         for (var k in citysGeo) {
-            fill(citysGeo[k], ++r);
+            fill(citysGeo[k], getColor(cityName));
         }
     }
 }
 
 
-function fill(citysGeo, r) {
 
+function getColor(cityName) {
+    ++r
+    if (r == 30) {
+        r++;
+    }
+    var theV = r < 10 ? '0' + r : r;
+    theV = theV.toString();
+    var color = "#" + theV + theV + theV;
+    cityNameColor[theV] = cityName;
+    // console.log(cityName, theV);
+    return color;
+}
+console.log(JSON.stringify(cityNameColor))
+
+
+function fill(citysGeo, r) {
+    // r+=;
     for (var j in citysGeo) {
         var x = 2048 + 4096 * (citysGeo[j][0]) / 360 - 118;
         var y = 1024 - 1024 * citysGeo[j][1] / 90 - 15;
@@ -16767,22 +16789,20 @@ function fill(citysGeo, r) {
         }
     }
     cxt.closePath();
-    // r++;
-    // console.log(r);
-    console.log(r);
-    var theV = r < 10 ? '0' + r : r;
-    theV = theV.toString();
 
-    // cxt.fillStyle = "#" + theV + theV + theV;
+
+
+
+    cxt.fillStyle = r;
     // console.log("#F" + theV + theV);
     // cxt.fillStyle = "black";
-    // cxt.fill();
-    // cxt.strokeStyle =  "#" + theV + theV + theV;
-    if (r == 0) {
-        cxt.strokeStyle = "#333";
-    } else {
-        cxt.strokeStyle = "white";
-    }
-
+    cxt.fill();
+    cxt.strokeStyle = r;
+    // if (r == 0) {
+    //     cxt.strokeStyle = "#333";
+    // } else {
+    //     cxt.strokeStyle = "white";
+    // }
     cxt.stroke();
+
 }
