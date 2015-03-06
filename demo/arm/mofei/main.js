@@ -82,7 +82,7 @@ var shaderMaterial = new THREE.ShaderMaterial({
     fragmentShader: document.getElementById('globeFragmentShader').textContent,
 });
 
-var earth = new THREE.Mesh(new THREE.SphereGeometry(100, 40, 40), shaderMaterial);
+var earth = new THREE.Mesh(new THREE.SphereGeometry(100, 100, 100), shaderMaterial);
 // earth.doubleSided = false;
 earth.rotation.x = Math.PI;
 earth.rotation.y = -Math.PI / 2;
@@ -306,7 +306,7 @@ function curves(lonlats) {
 
 function lonlatToVet3(longitude, latitude) {
     var rad = 100;
-    var lon = longitude - 90;
+    var lon = longitude - 80;
     var lat = latitude;
 
     var phi = Math.PI / 2 - lat * Math.PI / 180 - Math.PI * 0.01;
@@ -505,8 +505,8 @@ var cityColor = {
     // camera.scale.z = 1;
     function initMove() {
         time++
-        rotating.rotation.x = rotateVX = (0.65 / step) * time;
-        rotating.rotation.y = rotateVY = -(1.6 / step) * time;
+        rotating.rotation.x = rotateVX = (0.63 / step) * time;
+        rotating.rotation.y = rotateVY = -(1.85 / step) * time;
         camera.scale.z = zVal = (2.2 / step) * time;
         if (time === step) {
             clearInterval(animation);
@@ -582,7 +582,7 @@ var cityColor = {
         // },5000)
         var colorIndex = buf[0] < 10 ? '0' + buf[0] : buf[0];
 
-        console.log(colorIndex,cityColor[colorIndex])
+        console.log(colorIndex, cityColor[colorIndex])
 
 
     }

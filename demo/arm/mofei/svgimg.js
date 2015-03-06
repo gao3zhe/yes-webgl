@@ -16763,18 +16763,18 @@ for (var i in citys) {
 
 
 function getColor(cityName) {
-        ++r
-        if (r == 30) {
-            r++;
-        }
-        var theV = r < 10 ? '0' + r : r;
-        theV = theV.toString();
-        var color = "#" + theV + theV + theV;
-        cityNameColor[theV] = cityName;
-        // console.log(cityName, theV);
-        return color;
+    ++r;
+    if (r == 30) {
+        r++;
     }
-    // console.log(JSON.stringify(cityNameColor))
+    var theV = r < 10 ? '0' + r : r;
+    theV = theV.toString();
+    var color = "#" + theV + theV + theV;
+    cityNameColor[theV] = cityName;
+    // console.log(cityName, theV);
+    return color;
+};
+// console.log(JSON.stringify(cityNameColor))
 
 
 function fill(citysGeo, r) {
@@ -16794,13 +16794,13 @@ function fill(citysGeo, r) {
     path.setAttribute('d', Path);
 
     if (r == '#000000') {
-        path.style.stroke = '#444';    
-    }else{
-        path.style.stroke = '#ccc';    
+        path.style.stroke = '#444';
+    } else {
+        path.style.stroke = '#ccc';
     }
     // path.style.stroke = r;
     path.style.strokeWidth = "1px";
-    
+
     // path.style.fill = r;
     path.style.fill = '#000';
 
