@@ -162,7 +162,7 @@ function drawStar(lines) {
             star.play.index = index;
             vertices.push(star);
 
-            size.push(Math.random() * 20);
+            size.push(Math.random() * 40);
             var color = new THREE.Color('#' + parseInt(Math.random() * 255).toString(16) + parseInt(Math.random() * 255).toString(16) + parseInt(Math.random() * 255).toString(16));
             // color = new THREE.Color('skyblue');
             colors.push(color);
@@ -475,8 +475,28 @@ var cityColor = {
     document.addEventListener('click', onDoucmentClick);
     document.addEventListener('mousewheel', onMouseWheel);
 
+    var followMouse = (function() {
+        var tar = $('<div class="OP_cityflow" style=" background:rgba(0,0,0,0.6); padding:5px 10px; border-radius:4px; border:1px solid #333; display:none; position:absolute; z-index:100; color:white;"></div>')
+        $('body').append(tar);
+        return function(cityIndex, event) {
+            cityIndex = cityIndex < 10 ? '0' + cityIndex : cityIndex;
+            var city = cityColor[cityIndex];
+            if (city === undefined) {
+                tar.hide();
+            } else {
+                tar.css({
+                    'top': event.pageY + 5,
+                    'left': event.pageX + 10,
+                }).html(city).show();
+            }
+        }
+    })();
+
     function onDocumentMouseMove(event) {
-        getPickedColor()
+        var cityX = getPickedColor();
+
+        followMouse(cityX[0], event);
+
         isClick = false;
         var pmouseX = mouseX;
         var pmouseY = mouseY;
@@ -498,6 +518,8 @@ var cityColor = {
     }
 
 
+
+
     //animate first time
     var time = 0;
     var step = 50;
@@ -507,7 +529,7 @@ var cityColor = {
         time++
         rotating.rotation.x = rotateVX = (0.63 / step) * time;
         rotating.rotation.y = rotateVY = -(1.85 / step) * time;
-        camera.scale.z = zVal = (2.2 / step) * time;
+        camera.scale.z = zVal = (1.5 / step) * time;
         if (time === step) {
             clearInterval(animation);
         }
@@ -543,11 +565,6 @@ var cityColor = {
         uniforms['outlineLevel'].value = 0;
         lookupTexture.needsUpdate = true;
 
-        // renderer.autoClear = false;
-        // renderer.autoClearColor = false;
-        // renderer.autoClearDepth = false;
-        // renderer.autoClearStencil = false;
-
         renderer.clear();
         renderer.render(scene, camera);
 
@@ -563,11 +580,6 @@ var cityColor = {
         var buf = new Uint8Array(4);
         gl.readPixels(mx, my, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, buf);
 
-        // console.log(buf,'@@@')
-        // return false;
-        // {"10":"湖南","11":"陕西","12":"广东","13":"吉林","14":"河北","15":"湖北","16":"贵州","17":"山东","18":"江西","19":"河南","20":"辽宁","21":"山西","22":"安徽","23":"福建","24":"浙江","25":"江苏","26":"重庆","27":"宁夏","28":"海南","29":"台湾","31":"北京","32":"天津","33":"上海","34":"香港","35":"澳门","01":"新疆","02":"西藏","03":"内蒙古","04":"青海","05":"四川","06":"黑龙江","07":"甘肃","08":"云南","09":"广西"}
-
-
         renderer.autoClear = true;
         renderer.autoClearColor = true;
         renderer.autoClearDepth = true;
@@ -575,15 +587,14 @@ var cityColor = {
 
 
         gl.preserveDrawingBuffer = false;
-        // setTimeout(function() {
+
         rotating.add(visual);
         uniforms['outlineLevel'].value = 1;
         highlightArea(buf[0]);
-        // },5000)
+
         var colorIndex = buf[0] < 10 ? '0' + buf[0] : buf[0];
 
-        console.log(colorIndex, cityColor[colorIndex])
-
+        return buf;
 
     }
 
