@@ -16793,15 +16793,15 @@ function fill(citysGeo, r) {
 
 
 
-    cxt.fillStyle = r;
+    // cxt.fillStyle = r;
     // console.log("#F" + theV + theV);
     // cxt.fillStyle = "black";
-    cxt.fill();
-    cxt.strokeStyle = r;
+    // cxt.fill();
+    // cxt.strokeStyle = r;
     // if (r == 0) {
     //     cxt.strokeStyle = "#333";
     // } else {
-    //     cxt.strokeStyle = "white";
+        cxt.strokeStyle = "white";
     // }
     cxt.stroke();
 

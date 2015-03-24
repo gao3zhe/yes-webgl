@@ -47,7 +47,7 @@ indexedMapTexture.minFilter = THREE.NearestFilter;
 
 
 
-var outlinedMapTexture = THREE.ImageUtils.loadTexture('images/outline5.png');
+var outlinedMapTexture = THREE.ImageUtils.loadTexture('images/outline6.png');
 // outlinedMapTexture.needsUpdate = true;
 
 var uniforms = {
@@ -76,18 +76,16 @@ var shaderMaterial = new THREE.ShaderMaterial({
     // transparent: true,
     // depthTest: true,
     // depthWrite: false,
-    // transparent: true,
     uniforms: uniforms,
     vertexShader: document.getElementById('globeVertexShader').textContent,
     fragmentShader: document.getElementById('globeFragmentShader').textContent,
 });
 
 var earth = new THREE.Mesh(new THREE.SphereGeometry(100, 100, 100), shaderMaterial);
-// earth.doubleSided = false;
+earth.doubleSided = false;
 earth.rotation.x = Math.PI;
 earth.rotation.y = -Math.PI / 2;
 earth.rotation.z = Math.PI;
-earth.id = "base";
 rotating.add(earth);
 
 

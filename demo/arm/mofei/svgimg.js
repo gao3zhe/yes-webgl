@@ -16794,15 +16794,15 @@ function fill(citysGeo, r) {
     path.setAttribute('d', Path);
 
     if (r == '#000000') {
-        path.style.stroke = '#444';
+        path.style.stroke = '#999';
     } else {
-        path.style.stroke = '#ccc';
+        path.style.stroke = '#fff';
     }
     // path.style.stroke = r;
     path.style.strokeWidth = "1px";
 
     // path.style.fill = r;
-    path.style.fill = '#000';
+    // path.style.fill = '#000';
 
     $('svg')[0].appendChild(path);
 
