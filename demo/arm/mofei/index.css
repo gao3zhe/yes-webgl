@@ -1,0 +1,99 @@
+body {
+    margin: 0;
+}
+
+.hotBj {
+    position: absolute;
+    top: 10px;
+    text-align: center;
+    width: 100%;
+    color: white;
+    z-index: 1000;
+    font-size: 22px;
+    line-height: 1.6em;
+}
+
+.pan {
+    border: 1px solid #666;
+    position: absolute;
+    left: 10px;
+    top: 10%;
+    min-height: 200px;
+    background: rgba(0, 0, 0, 0.3);
+    color: #ccc;
+}
+
+.pan a {
+    display: inline-block;
+    width: 50%;
+    border: none;
+    padding: 0;
+    margin: 0;
+    float: left;
+    height: 38px;
+    line-height: 38px;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    background: rgba(255, 255, 255, 0.2);
+    border-bottom: 1px solid #444;
+}
+
+.pan a:nth-child(1) {
+    border-right: 1px solid #444;
+    margin-right: -1px;
+}
+
+.pan a.active {
+    border-bottom: none;
+    background: none;
+}
+
+.panNav {
+    overflow: hidden;
+}
+
+.panBlock {
+    font-size: 14px;
+}
+
+.panBlock:hover {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.panBlock:nth-child(1) {
+    color: #fff;
+    padding-top: 15px;
+}
+
+.panBlock span {
+    overflow: hidden;
+}
+
+.panBlock span:nth-child(1) {
+    padding: 5px;
+    display: inline-block;
+    text-align: center;
+    width: 40px;
+}
+
+.panBlock span:nth-child(2) {
+    padding: 5px;
+    display: inline-block;
+    text-align: center;
+    width: 140px;
+    white-space: nowrap;
+}
+
+.panBlock span:nth-child(3) {
+    padding: 5px;
+    display: inline-block;
+    text-align: center;
+    width: 80px;
+}
+
+.panBlock em {
+	font-style: normal;
+    text-transform: none;
+    cursor: pointer;
+}

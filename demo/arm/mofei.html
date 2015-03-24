@@ -9,13 +9,28 @@
 
 		
 		<script src="mofei/three.js"></script>
-		<style type="text/css">
-			body { margin: 0; }
-		</style>
+		<link rel="stylesheet" type="text/css" href="mofei/index.css">
 	</head>
 
 	<body>
-		<div id="earth"></div>
+		<div class="hotBj">
+			北京 - 热门迁入路线TOP10
+			<br>
+			(2015-02-24)
+		</div>
+		<div class="pan">
+			<div class="panNav">
+				<a href="#" class="active">迁入</a>
+				<a href="#">迁出</a>
+			</div>
+			
+			<div class="showArae"></div>
+		</div>
+
+		<div id="earth">
+			
+		</div>
+		
 		<script type="x-shader/x-vertex" id="vertexshader">
 			uniform float amplitude;
 			attribute float size;

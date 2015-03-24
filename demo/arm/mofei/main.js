@@ -258,7 +258,7 @@ function drawStar(lines) {
  */
 var curvesLin;
 
-function curves(lonlats) {
+function curves(lonlats, level) {
 
     var lines = [];
 
@@ -270,7 +270,21 @@ function curves(lonlats) {
         var start = lonlats[i].start;
         var end = lonlats[i].end;
         var curve = getCurve(lonlatToVet3(start[0], start[1]), lonlatToVet3(end[0], end[1]));
-        var color = '#' + parseInt(Math.random() * 255).toString(16) + parseInt(Math.random() * 255).toString(16) + parseInt(Math.random() * 255).toString(16);
+        var color;
+        if (level && level[i]) {
+            var red = (255 * level[i] )| 0;
+            var green = 255 - red;
+            red = (red).toString(16)
+            green = (green).toString(16)
+            red = red.length <= 1 ? '0' + red : red;
+            green = green.length <= 1 ? '0' + green : green;
+            color = '#' + red + green + '00';
+            // console.log(level[i],red);
+        } else {
+            color = '#' + parseInt(Math.random() * 255).toString(16) + parseInt(Math.random() * 255).toString(16) + parseInt(Math.random() * 255).toString(16);
+        }
+        console.log(color)
+
         for (var j in curve.vertices) {
             var lineColor = new THREE.Color(color); //14497804
             lineColors.push(lineColor);
@@ -283,14 +297,15 @@ function curves(lonlats) {
     visual.remove(curvesLin);
     curvesLin = new THREE.Line(theCurves, new THREE.LineBasicMaterial({
         color: 0xffffff,
-        opacity: 0.5,
+        opacity: 0.3,
         blending: THREE.AdditiveBlending,
         transparent: true,
         depthWrite: false,
         vertexColors: true,
-        linewidth: 1
+        linewidth: 3
     }));
     curvesLin.renderDepth = false;
+
     visual.add(curvesLin);
 
     drawStar(lines);
@@ -472,6 +487,7 @@ var cityColor = {
     document.addEventListener('mousemove', onDocumentMouseMove);
     document.addEventListener('click', onDoucmentClick);
     document.addEventListener('mousewheel', onMouseWheel);
+    document.addEventListener('DOMMouseScroll', onMouseWheel)
 
     var followMouse = (function() {
         var tar = $('<div class="OP_cityflow" style=" background:rgba(0,0,0,0.6); padding:5px 10px; border-radius:4px; border:1px solid #333; display:none; position:absolute; z-index:100; color:white;"></div>')
@@ -527,7 +543,7 @@ var cityColor = {
         time++
         rotating.rotation.x = rotateVX = (0.63 / step) * time;
         rotating.rotation.y = rotateVY = -(1.85 / step) * time;
-        camera.scale.z = zVal = (1.5 / step) * time;
+        camera.scale.z = zVal = (1.2 / step) * time;
         if (time === step) {
             clearInterval(animation);
         }
