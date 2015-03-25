@@ -585,9 +585,15 @@ var cityColor = {
      */
     var images = ["images/indexed7.png", "images/outline7.png", "images/particleA.png"]
 
-    for (var i = 0; i < images.length; i++) {
+    loadImg(0);
+
+    function loadImg(i) {
         var image = new Image();
+        console.log('load', i)
         image.onload = function() {
+            if (i < images.length - 1) {
+                loadImg(++i);
+            }
             imageOk();
         }
         image.src = images[i];
