@@ -21,7 +21,7 @@ body {
     min-height: 200px;
     background: rgba(0, 0, 0, 0.3);
     color: #ccc;
-    width:290px;
+    width: 290px;
 }
 
 .pan a {
@@ -97,15 +97,15 @@ body {
 }
 
 .panBlock em {
-	text-decoration: underline;
+    text-decoration: underline;
     font-style: normal;
     text-transform: none;
     cursor: pointer;
-    color:#64daf1;
+    color: #64daf1;
 }
 
 .panSearch input {
-	position: absolute;
+    position: absolute;
     top: 100px;
     left: 10px;
     width: 290px;
@@ -128,4 +128,41 @@ body {
     color: #a7e808;
 }
 
-.showAraeTips { font-size:14px; padding:5px;}
+.showAraeTips {
+    font-size: 14px;
+    padding: 5px;
+}
+
+.loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: #272922;
+    z-index: 10000;
+    color: #e6df6d;
+    text-align: center;
+    padding-top: 20%;
+    -webkit-transition: all 0.5s ease-in;
+    transition: all 0.5s ease-in;
+}
+
+.loadingText {
+    font-size: 40px;
+}
+
+.loadingProgress {
+    background: #ccc;
+    width: 0%;
+    height: 20px;
+    margin-top: 20px;
+    -webkit-transition: all 0.5s ease-in;
+    transition: all 0.5s ease-in;
+}
+
+.loadingSubText {
+    font-size: 14px;
+    color: #999;
+    margin-top: 10px;
+}

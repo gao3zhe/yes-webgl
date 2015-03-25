@@ -39,7 +39,6 @@ lookupTexture.needsUpdate = true;
 
 
 
-
 var indexedMapTexture = THREE.ImageUtils.loadTexture("images/indexed7.png");
 // indexedMapTexture.needsUpdate = true;
 indexedMapTexture.magFilter = THREE.NearestFilter;
@@ -581,6 +580,41 @@ var cityColor = {
     }
 
 
+    /**
+     * load all the images then start work
+     */
+    var images = ["images/indexed7.png", "images/outline7.png", "images/particleA.png"]
+
+    for (var i = 0; i < images.length; i++) {
+        var image = new Image();
+        image.onload = function() {
+            imageOk();
+        }
+        image.src = images[i];
+        $('.loadingSubText').html('加载图片资源：' + images[i]);
+    }
+
+    var imageOk = (function() {
+        var count = 0;
+        var total = images.length;
+        return function() {
+            if (++count >= total) {
+                // console.log('!!!!')
+                $('.loading').css({
+                    'opacity': '0'
+                });
+                setTimeout(function() {
+                    initMove();
+                }, 500)
+
+            }
+            $('.loadingProgress').css({
+                'width': (count / total) * 100 + '%'
+            });
+            // console.log(',,,,,,', ++count, total);
+        }
+    })();
+
 
 
     //animate first time
@@ -597,7 +631,7 @@ var cityColor = {
             clearInterval(animation);
         }
     }
-    initMove();
+
     animation = setInterval(initMove, 1000 / 60);
     //************
 
