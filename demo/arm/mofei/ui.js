@@ -376,7 +376,15 @@ $(function() {
     startCity('北京');
 
     var time = new Date();
-    $('.hotBj span').eq(2).html('(' + time.getFullYear() + '-' + (time.getMonth() + 1) + '-' + time.getDate() + ')')
+    $('.hotBj span').eq(2).html('(' + time.getFullYear() + '-' + (time.getMonth() + 1) + '-' + time.getDate() + ')');
+
+    $('.panSearch input').on('keyup', function(e) {
+        if (e.keyCode == 13) {
+            startCity($(this).val());
+            $(this).val('');
+        }
+        // console.log(e.keyCode, )
+    })
 });
 
 function startCity(city) {

@@ -351,8 +351,8 @@ function lonlatToVet3(longitude, latitude) {
     var lon = longitude - 80;
     var lat = latitude;
 
-    var phi = Math.PI / 2 - lat * Math.PI / 180 - Math.PI * 0.01;
-    var theta = 2 * Math.PI - lon * Math.PI / 180 + Math.PI * 0.06;
+    var phi = Math.PI / 2 - lat * Math.PI / 180 - Math.PI * 0.007;
+    var theta = 2 * Math.PI - lon * Math.PI / 180 + Math.PI * 0.058;
 
     var center = new THREE.Vector3();
     center.x = Math.sin(phi) * Math.cos(theta) * rad;
