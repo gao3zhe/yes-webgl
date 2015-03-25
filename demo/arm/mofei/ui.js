@@ -377,6 +377,9 @@ $(function() {
 });
 
 function startCity(city) {
+    //UI
+    $('.hotBj span').eq(0).html(city);
+    $('.hotBj span').eq(1).html(globalType === In ? '迁入' : '迁出');
     getDate(city, globalType, function(data) {
         listDate(data, city, globalType);
         // console.log('xxxx',data);
@@ -390,9 +393,12 @@ function cityseries(data, city, type) {
     for (var i = 0; i < data.length; i++) {
         // console.log();
         var thisCity = citys[city];
-        var persent = data[i].city_migrate_in_index / 1000 * 2;
-        persent = persent > 1 ? 1 : persent;
-        lavel.push(persent);
+        // var persent = data[i].city_migrate_in_index / 1000 * 2;
+        // persent = persent > 1 ? 1 : persent;
+        var levelV = data[i].city_migrate_in_index || data[i].city_migrate_out_index;
+        levelV = levelV / 100;
+        levelV = levelV > 1 ? 1 : levelV;
+        lavel.push(levelV);
 
         if (type === 0) {
             points.push(citys[data[i].city_name][0]);
@@ -406,14 +412,17 @@ function cityseries(data, city, type) {
             points.push(citys[data[i].city_name][1]);
         }
     }
-    // console.log(lavel);
+    console.log('??????', lavel);
     curves(pointsToPlace(points), lavel);
 }
 
 
 function getDate(city, type, callback) {
+    var time = new Date();
+    var type = globalType === 0 ? 'migrate_in' : 'migrate_out';
+    // console.log('??', type)
     $.ajax({
-        url: 'http://renqi.baidu.com/qianxi/api/city-migration.php?callback=abc&type=migrate_in&sort_by=low_index&limit=10&city_name=' + city + '&date_start=20150324&date_end=20150324',
+        url: 'http://renqi.baidu.com/qianxi/api/city-migration.php?callback=abc&type=' + type + '&sort_by=low_index&limit=10&city_name=' + city + '&date_start=20150324&date_end=20150324',
         dataType: 'jsonp',
         success: function(data) {
             callback && callback(data)
@@ -424,18 +433,42 @@ function getDate(city, type, callback) {
 function listDate(data, city, type) {
     // console.log(data);
     var temp = '<div class="panBlock"><span>排名</span><span>热门路线</span><span>迁徙指数</span></div>';
+    // console.log(globalType);
     for (var i in data) {
-        var comme = data[i].city_name;
-        var to = city;
+
+        if (globalType === In) {
+            var come = data[i].city_name;
+            var to = city;
+        } else {
+            var to = data[i].city_name;
+            var come = city;
+        }
         var index = parseInt(i) + 1;
         if (i == 'length') {
             continue;
         }
-        temp += '<div class="panBlock"><span>' + index + '</span><span><em>' + comme + '</em> - <em>' + to + '</em></span><span>' + data[i].city_migrate_in_index + '%</span></div>'
+
+        // temp += '<div class="panBlock"><span>' + index + '</span><span><em>' + come + '</em>' + (globalType ? '←' : '→') + ' <em>' + to + '</em></span><span>' + data[i].city_migrate_in_index + '%</span></div>';
+        var type = globalType === 0 ? 'city_migrate_in_index' : 'city_migrate_out_index';
+        temp += '<div class="panBlock"><span>' + index + '</span><span><em>' + come + '</em> →  <em>' + to + '</em></span><span>' + data[i][type] + '%</span></div>';
     }
     $('.showArae').html(temp);
 }
 
 $('.showArae').on('click', 'em', function() {
     startCity($(this).html());
+});
+
+//changetype
+$('.panNav').on('click', 'a', function() {
+
+    // console.log()
+    globalType = $('.panNav a').index($(this));
+
+    if (!$(this).hasClass('active')) {
+        $('.panNav a').removeClass('active');
+        $(this).addClass('active');
+
+    }
+    return false;
 })

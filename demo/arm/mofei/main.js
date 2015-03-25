@@ -40,14 +40,14 @@ lookupTexture.needsUpdate = true;
 
 
 
-var indexedMapTexture = THREE.ImageUtils.loadTexture("images/indexed5.png");
+var indexedMapTexture = THREE.ImageUtils.loadTexture("images/indexed7.png");
 // indexedMapTexture.needsUpdate = true;
 indexedMapTexture.magFilter = THREE.NearestFilter;
 indexedMapTexture.minFilter = THREE.NearestFilter;
 
 
 
-var outlinedMapTexture = THREE.ImageUtils.loadTexture('images/outline6.png');
+var outlinedMapTexture = THREE.ImageUtils.loadTexture('images/outline7.png');
 // outlinedMapTexture.needsUpdate = true;
 
 var uniforms = {
@@ -143,7 +143,10 @@ function particleUpdate(tar) {
  */
 var pSystem;
 
-function drawStar(lines) {
+function drawStar(lines, level) {
+
+    // return false;
+
     var particlesGeo = new THREE.Geometry();
 
     //init the vertices and the size , color of all the vertices
@@ -160,8 +163,30 @@ function drawStar(lines) {
             star.play.index = index;
             vertices.push(star);
 
-            size.push(Math.random() * 40);
-            var color = new THREE.Color('#' + parseInt(Math.random() * 255).toString(16) + parseInt(Math.random() * 255).toString(16) + parseInt(Math.random() * 255).toString(16));
+
+            size.push(20);
+
+            var color;
+            // console.log
+            if (level && level[i]) {
+                var R = (255 * level[i]) | 0;
+                // R = (R + 150) > 255 ? 255 : (R + 150);
+                var G = 255 - R;
+                var B = 0;
+                // red = (red).toString(16)
+                // green = (green).toString(16)
+                // red = red.length <= 1 ? '0' + red : red;
+                // green = green.length <= 1 ? '0' + green : green;
+                // color = '#' + red + green + '00';
+                color = 'rgb(' + R + ',' + G + ',' + B + ')';
+                // console.log(level[i],red);
+            } else {
+                color = '#' + parseInt(Math.random() * 255).toString(16) + parseInt(Math.random() * 255).toString(16) + parseInt(Math.random() * 255).toString(16);
+            }
+
+            var color = new THREE.Color(color);
+
+
             // color = new THREE.Color('skyblue');
             colors.push(color);
         }
@@ -271,19 +296,23 @@ function curves(lonlats, level) {
         var end = lonlats[i].end;
         var curve = getCurve(lonlatToVet3(start[0], start[1]), lonlatToVet3(end[0], end[1]));
         var color;
+        // console.log
         if (level && level[i]) {
-            var red = (255 * level[i] )| 0;
-            var green = 255 - red;
-            red = (red).toString(16)
-            green = (green).toString(16)
-            red = red.length <= 1 ? '0' + red : red;
-            green = green.length <= 1 ? '0' + green : green;
-            color = '#' + red + green + '00';
+            var R = (255 * level[i]) | 0;
+            // R = (R + 150) > 255 ? 255 : (R + 150);
+            var G = 255 - R;
+            var B = 0;
+            // red = (red).toString(16)
+            // green = (green).toString(16)
+            // red = red.length <= 1 ? '0' + red : red;
+            // green = green.length <= 1 ? '0' + green : green;
+            // color = '#' + red + green + '00';
+            color = 'rgb(' + R + ',' + G + ',' + B + ')';
             // console.log(level[i],red);
         } else {
             color = '#' + parseInt(Math.random() * 255).toString(16) + parseInt(Math.random() * 255).toString(16) + parseInt(Math.random() * 255).toString(16);
         }
-        console.log(color)
+        // console.log(color)
 
         for (var j in curve.vertices) {
             var lineColor = new THREE.Color(color); //14497804
@@ -297,18 +326,18 @@ function curves(lonlats, level) {
     visual.remove(curvesLin);
     curvesLin = new THREE.Line(theCurves, new THREE.LineBasicMaterial({
         color: 0xffffff,
-        opacity: 0.3,
+        opacity: 0.5,
         blending: THREE.AdditiveBlending,
         transparent: true,
         depthWrite: false,
         vertexColors: true,
-        linewidth: 3
+        linewidth: 2
     }));
     curvesLin.renderDepth = false;
 
     visual.add(curvesLin);
 
-    drawStar(lines);
+    drawStar(lines, level);
 }
 
 /**
@@ -384,7 +413,7 @@ function getCurve(start, end) {
     // splineCurveB.updateArcLengths();
 
     //  how many vertices do we want on this guy? this is for *each* side
-    var vertexCountDesired = Math.floor(distanceBetweenCountryCenter * 0.02 + 6) * 2;
+    var vertexCountDesired = Math.floor(distanceBetweenCountryCenter * 0.02 + 6) * 1.5;
 
     //  collect the vertices
     var points = splineCurveA.getPoints(vertexCountDesired);
@@ -543,7 +572,7 @@ var cityColor = {
         time++
         rotating.rotation.x = rotateVX = (0.63 / step) * time;
         rotating.rotation.y = rotateVY = -(1.85 / step) * time;
-        camera.scale.z = zVal = (1.2 / step) * time;
+        camera.scale.z = zVal = (1.4 / step) * time;
         if (time === step) {
             clearInterval(animation);
         }
@@ -564,7 +593,12 @@ var cityColor = {
         // d3Graphs.zoomBtnMouseup();
         dragging = false;
         if (isClick) {
-            getPickedColor()
+            var color = getPickedColor();
+            // var cityIndex = color[0];
+            // cityIndex = cityIndex < 10 ? '0' + cityIndex : cityIndex;
+            // var city = cityColor[cityIndex];
+            // console.log(city);
+            // startCity(city);
         }
     }
 
