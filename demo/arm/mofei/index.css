@@ -157,7 +157,8 @@ body {
 }
 
 .loadingProgress {
-    background: #ccc;
+    background-color: #ccc;
+    background-image: url('../images/loading.gif');
     width: 0%;
     height: 20px;
     margin-top: 20px;

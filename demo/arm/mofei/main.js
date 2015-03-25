@@ -633,7 +633,7 @@ var cityColor = {
             $('.bottomTips').css({
                 'bottom': '10px'
             })
-        }, 800)
+        }, 500)
     }
 
     //animate first time
