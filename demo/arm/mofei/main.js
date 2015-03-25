@@ -606,12 +606,7 @@ var cityColor = {
         return function() {
             if (++count >= total) {
                 // console.log('!!!!')
-                $('.loading').css({
-                    'opacity': '0'
-                });
-                setTimeout(function() {
-                    initMove();
-                }, 500)
+                open();
 
             }
             $('.loadingProgress').css({
@@ -622,6 +617,24 @@ var cityColor = {
     })();
 
 
+    function open() {
+        $('.loading').css({
+            'opacity': '0'
+        });
+        setTimeout(function() {
+            $('.loading').hide();
+            initMove();
+        }, 500)
+
+        setTimeout(function() {
+            $('.panSearch input,.pan').css({
+                'left': '10px'
+            })
+            $('.bottomTips').css({
+                'bottom': '10px'
+            })
+        }, 800)
+    }
 
     //animate first time
     var time = 0;

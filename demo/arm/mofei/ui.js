@@ -423,7 +423,7 @@ function cityseries(data, city, type) {
             points.push(citys[data[i].city_name][1]);
         }
     }
-    console.log('??????', lavel);
+    // console.log('??????', lavel);
     curves(pointsToPlace(points), lavel);
 }
 
