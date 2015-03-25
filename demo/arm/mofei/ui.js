@@ -374,6 +374,9 @@ var citys = {
 
 $(function() {
     startCity('北京');
+
+    var time = new Date();
+    $('.hotBj span').eq(2).html('(' + time.getFullYear() + '-' + (time.getMonth() + 1) + '-' + time.getDate() + ')')
 });
 
 function startCity(city) {

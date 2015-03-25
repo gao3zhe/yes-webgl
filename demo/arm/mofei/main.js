@@ -518,6 +518,9 @@ var cityColor = {
     document.addEventListener('mousewheel', onMouseWheel);
     document.addEventListener('DOMMouseScroll', onMouseWheel)
 
+    /**
+     * the tips of city
+     */
     var followMouse = (function() {
         var tar = $('<div class="OP_cityflow" style=" background:rgba(0,0,0,0.6); padding:5px 10px; border-radius:4px; border:1px solid #333; display:none; position:absolute; z-index:100; color:white;"></div>')
         $('body').append(tar);
@@ -535,10 +538,27 @@ var cityColor = {
         }
     })();
 
+    /**
+     * auto move by mouse
+     */
+    var moveBymouse = function(e) {
+        var offsetX = event.pageX - document.body.clientWidth / 2
+        var offsetY = document.body.clientHeight / 2 - event.pageY
+        var offsetXP = offsetX / document.body.clientWidth;
+        var offsetYP = offsetY / document.body.clientHeight;
+
+        var rx = rotateVX - 0.1 * offsetYP;
+        var ry = rotateVY + 0.1 * offsetXP;
+        rotating.rotation.x = rx;
+        rotating.rotation.y = ry;
+    }
+
+
     function onDocumentMouseMove(event) {
         var cityX = getPickedColor();
 
         followMouse(cityX[0], event);
+        moveBymouse(event)
 
         isClick = false;
         var pmouseX = mouseX;
@@ -585,8 +605,6 @@ var cityColor = {
         dragging = isClick = true;
         pressX = mouseX;
         pressY = mouseY;
-        // rotateX = 0;
-        // rotateY = 0;
     }
 
     function onDocumentMouseUp(event) {
@@ -594,11 +612,6 @@ var cityColor = {
         dragging = false;
         if (isClick) {
             var color = getPickedColor();
-            // var cityIndex = color[0];
-            // cityIndex = cityIndex < 10 ? '0' + cityIndex : cityIndex;
-            // var city = cityColor[cityIndex];
-            // console.log(city);
-            // startCity(city);
         }
     }
 
