@@ -103,11 +103,11 @@ var earthGlowMaterial = new THREE.ShaderMaterial({
     uniforms: {
         "c": {
             type: "f",
-            value: 0.1
+            value: 0.5
         },
         "p": {
             type: "f",
-            value: 0.9
+            value: 1.8
         },
         glowColor: {
             type: "c",
@@ -126,7 +126,7 @@ var earthGlowMaterial = new THREE.ShaderMaterial({
 });
 var earthGlow = new THREE.Mesh(new THREE.SphereGeometry(config.radius, 100, 100), earthGlowMaterial);
 earthGlow.position = earth.position;
-earthGlow.scale.multiplyScalar(1.008);
+earthGlow.scale.multiplyScalar(1.015);
 scene.add(earthGlow);
 
 
