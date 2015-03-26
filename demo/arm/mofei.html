@@ -93,6 +93,7 @@
 			uniform sampler2D mapIndex;
 			uniform sampler2D lookup;
 			uniform sampler2D outline;
+			uniform sampler2D blendImage;
 			uniform float outlineLevel;
 			// varying vec3 vNormal;
 			varying vec2 vUv;
@@ -105,7 +106,8 @@
 				mask = clamp(mask,0.0,1.0);
 				float outlineColor = texture2D( outline, vUv ).x * outlineLevel;
 				float diffuse = mask + outlineColor;
-				gl_FragColor = vec4( vec3(diffuse), 1.0  );
+				vec4 img = texture2D( blendImage, vUv ) * outlineLevel *0.8;
+				gl_FragColor = diffuse+img;
 			}
 		</script>
 

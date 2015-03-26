@@ -16708,6 +16708,10 @@ var china = {
 };
 
 
+var r = 50;
+var g = 50;
+var b = 50;
+
 
 
 // var canvas = $('canvas')[0];
@@ -16728,14 +16732,14 @@ for (var i in worlds) {
     var citysGeo = worlds[i].geometry.coordinates;
     // console.log(citysGeo);    
     if (worlds[i].geometry.type == 'Polygon') {
-        fill(citysGeo[0], '#000000');
+        fill(citysGeo[0], getColor(cityName));
     } else {
         // citysGeo = worlds[i].geometry;
 
         // console.log(citysGeo);
         for (var k in citysGeo) {
             // console.log(citysGeo[k][0]);
-            fill(citysGeo[k][0], '#000000');
+            fill(citysGeo[k][0], getColor(cityName));
             // break;
         }
     }
@@ -16743,8 +16747,9 @@ for (var i in worlds) {
 
 var citys = china.features;
 
-var r = 0;
+
 var cityNameColor = {};
+
 
 for (var i in citys) {
     // console.log();
@@ -16763,6 +16768,25 @@ for (var i in citys) {
 
 
 function getColor(cityName) {
+    ++r;
+    if (r > 255) {
+        r = 1;
+        ++g;
+    }
+    if (g > 255) {
+        g = 1;
+        ++b
+    }
+
+    var R = r.toString(16);
+    R = R.length < 2 ? '0' + R : R;
+    var G = g.toString(16);
+    G = G.length < 2 ? '0' + G : G;
+    var B = b.toString(16);
+    B = B.length < 2 ? '0' + B : B;
+    color = '#' + R + G + B;
+    console.log(r, g, b, color)
+    return color;
     ++r;
     if (r == 30) {
         r++;
@@ -16794,14 +16818,15 @@ function fill(citysGeo, r) {
     path.setAttribute('d', Path);
 
     if (r == '#000000') {
-        path.style.stroke = '#999';
+        // path.style.stroke = '#999';
     } else {
-        path.style.stroke = '#fff';
+        // path.style.stroke = '#fff';
     }
-    // path.style.stroke = r;
-    path.style.strokeWidth = "1px";
+    path.style.stroke = r;
+    // path.style.stroke = '#ccc';
+    // path.style.strokeWidth = "1px";
 
-    // path.style.fill = r;
+    path.style.fill = r;
     // path.style.fill = '#000';
 
     $('svg')[0].appendChild(path);

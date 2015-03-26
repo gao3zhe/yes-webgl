@@ -52,6 +52,7 @@ indexedMapTexture.minFilter = THREE.NearestFilter;
 
 
 var outlinedMapTexture = THREE.ImageUtils.loadTexture('images/outline7.png');
+var blendImage = THREE.ImageUtils.loadTexture("images/earth-day2.jpg");
 // outlinedMapTexture.needsUpdate = true;
 
 var uniforms = {
@@ -70,6 +71,10 @@ var uniforms = {
     'outlineLevel': {
         type: 'f',
         value: 1
+    },
+    'blendImage': {
+        type: 't',
+        value: blendImage
     }
 };
 
@@ -98,7 +103,7 @@ var earthGlowMaterial = new THREE.ShaderMaterial({
     uniforms: {
         "c": {
             type: "f",
-            value: 0.3
+            value: 0.1
         },
         "p": {
             type: "f",
@@ -157,7 +162,7 @@ var render = function() {
     // earthGlow.material.uniforms.viewVector.value = new THREE.Vector3().subVectors(rotating.position, earthGlow.position);
 };
 
-// earthGlow.material.uniforms.viewVector.value = camera.rotation;
+earthGlow.material.uniforms.viewVector.value = camera.rotation;
 highlightArea();
 render();
 
