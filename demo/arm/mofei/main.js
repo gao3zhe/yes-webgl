@@ -611,12 +611,15 @@ var cityColor = {
         followMouse(cityX[0], event);
         // moveBymouse(event)
 
+        var clientX = event.clientX || event.touches[0].pageX;
+        var clientY = event.clientY || event.touches[0].pageY;
+
         isClick = false;
         var pmouseX = mouseX;
         var pmouseY = mouseY;
-
-        mouseX = event.clientX - window.innerWidth * 0.5;
-        mouseY = event.clientY - window.innerHeight * 0.5;
+        // console.log()
+        mouseX = clientX - window.innerWidth * 0.5;
+        mouseY = clientY - window.innerHeight * 0.5;
 
         pmouseX = pmouseX || mouseX;
         pmouseY = pmouseY || mouseY;
