@@ -562,6 +562,13 @@ var cityColor = {
     document.addEventListener('mousewheel', onMouseWheel);
     document.addEventListener('DOMMouseScroll', onMouseWheel)
 
+    document.addEventListener('touchstart', onDocumentMouseDown);
+    document.addEventListener('touchend', onDocumentMouseUp);
+    document.addEventListener('touchmove', onDocumentMouseMove);
+    // document.addEventListener('click', onDoucmentClick);
+    // document.addEventListener('mousewheel', onMouseWheel);
+    // document.addEventListener('DOMMouseScroll', onMouseWheel)
+
     /**
      * the tips of city
      */
