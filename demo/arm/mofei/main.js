@@ -102,7 +102,7 @@ var earthGlowMaterial = new THREE.ShaderMaterial({
         },
         "p": {
             type: "f",
-            value: 1.3
+            value: 0.9
         },
         glowColor: {
             type: "c",
@@ -121,7 +121,7 @@ var earthGlowMaterial = new THREE.ShaderMaterial({
 });
 var earthGlow = new THREE.Mesh(new THREE.SphereGeometry(config.radius, 100, 100), earthGlowMaterial);
 earthGlow.position = earth.position;
-earthGlow.scale.multiplyScalar(1.02);
+earthGlow.scale.multiplyScalar(1.005);
 rotating.add(earthGlow);
 
 
@@ -206,8 +206,12 @@ function drawStar(lines, level) {
             star.play.index = index;
             vertices.push(star);
 
+            // if (j === 0) {
+            // size.push(80);
+            // } else {
+            size.push(28 | 0);
+            // }
 
-            size.push(20);
 
             var color;
             // console.log
