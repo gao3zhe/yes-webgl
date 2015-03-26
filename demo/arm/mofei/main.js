@@ -39,7 +39,7 @@ lookupTexture.needsUpdate = true;
 
 
 
-var indexedMapTexture = THREE.ImageUtils.loadTexture("images/indexed7.png");
+var indexedMapTexture = THREE.ImageUtils.loadTexture("images/indexed5.png");
 // indexedMapTexture.needsUpdate = true;
 indexedMapTexture.magFilter = THREE.NearestFilter;
 indexedMapTexture.minFilter = THREE.NearestFilter;
@@ -583,7 +583,7 @@ var cityColor = {
     /**
      * load all the images then start work
      */
-    var images = ["images/indexed7.png", "images/outline7.png", "images/particleA.png"]
+    var images = ["images/indexed5.png", "images/outline7.png", "images/particleA.png"]
 
     loadImg(0);
 
