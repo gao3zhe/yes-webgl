@@ -115,14 +115,14 @@ var earthGlowMaterial = new THREE.ShaderMaterial({
     },
     vertexShader: document.getElementById('glowVertexShader').textContent,
     fragmentShader: document.getElementById('glowFragmentShader').textContent,
-    side: THREE.FrontSide,
+    // side: THREE.FrontSide,
     blending: THREE.AdditiveBlending,
     transparent: true
 });
 var earthGlow = new THREE.Mesh(new THREE.SphereGeometry(config.radius, 100, 100), earthGlowMaterial);
 earthGlow.position = earth.position;
-earthGlow.scale.multiplyScalar(1.005);
-rotating.add(earthGlow);
+earthGlow.scale.multiplyScalar(1.008);
+scene.add(earthGlow);
 
 
 
@@ -154,15 +154,10 @@ var render = function() {
     particleUpdate(rotating);
     requestAnimationFrame(render);
 
-    // earthGlow.material.uniforms.viewVector.value = {
-    //     x: -rotating.rotation.x,
-    //     y: -rotating.rotation.y,
-    //     z: rotating.rotation.z
-    // }
-    // console.log( -rotating.rotation.x)
+    // earthGlow.material.uniforms.viewVector.value = new THREE.Vector3().subVectors(rotating.position, earthGlow.position);
 };
 
-earthGlow.material.uniforms.viewVector.value = camera.rotation;
+// earthGlow.material.uniforms.viewVector.value = camera.rotation;
 highlightArea();
 render();
 
