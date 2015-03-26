@@ -1,8 +1,3 @@
-var config = {
-    radius: 100
-}
-
-
 var earthGL = document.getElementById('earth');
 
 //snece
@@ -21,7 +16,7 @@ earthGL.appendChild(renderer.domElement);
 
 
 //camera
-var camera = new THREE.PerspectiveCamera(28, window.innerWidth / window.innerHeight, 1, 20000);
+var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 20000);
 camera.position.z = 200;
 camera.position.y = 0;
 
@@ -85,44 +80,12 @@ var shaderMaterial = new THREE.ShaderMaterial({
     fragmentShader: document.getElementById('globeFragmentShader').textContent,
 });
 
-var earth = new THREE.Mesh(new THREE.SphereGeometry(config.radius, 100, 100), shaderMaterial);
+var earth = new THREE.Mesh(new THREE.SphereGeometry(100, 100, 100), shaderMaterial);
 earth.doubleSided = false;
 earth.rotation.x = Math.PI;
 earth.rotation.y = -Math.PI / 2;
 earth.rotation.z = Math.PI;
 rotating.add(earth);
-
-
-
-var earthGlowMaterial = new THREE.ShaderMaterial({
-    uniforms: {
-        "c": {
-            type: "f",
-            value: 0.3
-        },
-        "p": {
-            type: "f",
-            value: 1.3
-        },
-        glowColor: {
-            type: "c",
-            value: new THREE.Color('#00b3ff')
-        },
-        viewVector: {
-            type: "v3",
-            value: camera.position
-        }
-    },
-    vertexShader: document.getElementById('glowVertexShader').textContent,
-    fragmentShader: document.getElementById('glowFragmentShader').textContent,
-    side: THREE.FrontSide,
-    blending: THREE.AdditiveBlending,
-    transparent: true
-});
-var earthGlow = new THREE.Mesh(new THREE.SphereGeometry(config.radius, 100, 100), earthGlowMaterial);
-earthGlow.position = earth.position;
-earthGlow.scale.multiplyScalar(1.02);
-rotating.add(earthGlow);
 
 
 
@@ -153,16 +116,9 @@ var render = function() {
     renderer.render(scene, camera);
     particleUpdate(rotating);
     requestAnimationFrame(render);
-
-    // earthGlow.material.uniforms.viewVector.value = {
-    //     x: -rotating.rotation.x,
-    //     y: -rotating.rotation.y,
-    //     z: rotating.rotation.z
-    // }
-    // console.log( -rotating.rotation.x)
 };
 
-earthGlow.material.uniforms.viewVector.value = camera.rotation;
+
 highlightArea();
 render();
 
@@ -390,8 +346,7 @@ function curves(lonlats, level) {
  **/
 
 function lonlatToVet3(longitude, latitude) {
-
-    var rad = config.radius;
+    var rad = 100;
     var lon = longitude - 80;
     var lat = latitude;
 
@@ -602,7 +557,7 @@ var cityColor = {
         var cityX = getPickedColor();
 
         followMouse(cityX[0], event);
-        // moveBymouse(event)
+        moveBymouse(event)
 
         isClick = false;
         var pmouseX = mouseX;
@@ -611,22 +566,16 @@ var cityColor = {
         mouseX = event.clientX - window.innerWidth * 0.5;
         mouseY = event.clientY - window.innerHeight * 0.5;
 
-        pmouseX = pmouseX || mouseX;
-        pmouseY = pmouseY || mouseY;
-
         if (dragging) {
             var rotateVYD = (mouseX - pmouseX) / 2 * Math.PI / 180;
             var rotateVXD = (mouseY - pmouseY) / 2 * Math.PI / 180;
             //x is coefficient, depend on camera's scale,the big the small;
-            // var x = zVal > 1 ? (1 / (zVal*10 )) : 1;
-            var x = 0.1
-                // console.log(x)
-                // console.log(zVal);
+            var x = zVal > 1 ? (1 / (zVal * 8)) : 1;
+            // console.log(zVal);
             rotateVY += rotateVYD * x;
             rotateVX += rotateVXD * x;
             rotating.rotation.x = rotateVX;
             rotating.rotation.y = rotateVY;
-            // console.log(mouseX , pmouseX)
         }
     }
 
@@ -640,6 +589,7 @@ var cityColor = {
 
     function loadImg(i) {
         var image = new Image();
+        console.log('load', i)
         image.onload = function() {
             if (i < images.length - 1) {
                 loadImg(++i);
@@ -693,10 +643,9 @@ var cityColor = {
     // camera.scale.z = 1;
     function initMove() {
         time++
-        rotating.rotation.x = rotateVX = -(0.23 / step) * time;
-        rotating.rotation.y = rotateVY = -(1.79 / step) * time;
-        camera.scale.z = zVal = (1 / step) * time;
-        camera.position.y = (80 / step) * time;
+        rotating.rotation.x = rotateVX = (0.63 / step) * time;
+        rotating.rotation.y = rotateVY = -(1.85 / step) * time;
+        camera.scale.z = zVal = (1.4 / step) * time;
         if (time === step) {
             clearInterval(animation);
         }
