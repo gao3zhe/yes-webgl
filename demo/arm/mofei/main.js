@@ -777,6 +777,51 @@ var cityColor = {
 
     }
 
+    var zoom = {
+        inprogress: false,
+        goToGolbal: function() {
+            var self = this;
+            if (self.inprogress) {
+                return false;
+            }
+            self.inprogress = true;
+            animationTo(camera.position.y, 0, 400, function(value) {
+                camera.position.y = value;
+            });
+            animationTo(camera.fov, 75, 400, function(value) {
+                camera.fov = value;
+                camera.updateProjectionMatrix();;
+            });
+            animationTo(rotating.rotation.x, 0.6, 400, function(value) {
+                rotating.rotation.x = rotateVX = value;
+            });
+
+            setTimeout(function() {
+                self.inprogress = false;
+            }, 500);
+        },
+        goTOArea: function() {
+            var self = this;
+            if (self.inprogress) {
+                return false;
+            }
+            self.inprogress = true;
+            animationTo(camera.position.y, 80, 400, function(value) {
+                camera.position.y = value;
+            });
+            animationTo(camera.fov, 28, 400, function(value) {
+                camera.fov = value;
+                camera.updateProjectionMatrix();;
+            });
+            animationTo(rotating.rotation.x, -0.23, 400, function(value) {
+                rotating.rotation.x = rotateVX = value;
+            });
+            setTimeout(function() {
+                self.inprogress = false;
+            }, 500);
+        }
+    }
+
     //mouse wheel
     function onMouseWheel(event) {
         var delta = 0;
@@ -789,15 +834,52 @@ var cityColor = {
             delta = -event.detail / 3;
         }
 
-        if (delta) {
-            camera.scale.z += delta * 0.1;
-            zVal = camera.scale.z;
-            zVal = zVal > 3 ? 3 : zVal;
-            zVal = zVal < 0.5 ? 0.5 : zVal;
-            camera.scale.z = zVal;
+
+        // if (delta) {
+        //     camera.scale.z += delta * 0.1;
+        //     zVal = camera.scale.z;
+        //     zVal = zVal > 3 ? 3 : zVal;
+        //     zVal = zVal < 0.5 ? 0.5 : zVal;
+        //     camera.scale.z = zVal;
+        // }
+
+        if (delta < 0) {
+            zoom.goTOArea()
+        } else if (delta > 0) {
+            zoom.goToGolbal()
         }
 
         event.returnValue = false;
+    }
+
+
+    function animationTo(start, end, time, callback, finishfn) {
+        var times = time / 16;
+        var d = (end - start) / times;
+        // console.log(d)
+        var doTimes = 0;
+        // var t = new Date();
+        var intervalId = setInterval(function() {
+            ++doTimes;
+            start += d;
+            callback && callback(start);
+            if (doTimes >= times) {
+                if (start < end) {
+                    callback && callback(end);
+                    // finishfn && finishfn(end);
+                }
+                finishfn && finishfn(end);
+                // console.log(new Date() - t)
+                clearInterval(intervalId);
+            }
+        }, 16);
+
+        this.intervalId = intervalId;
+
+        return intervalId;
+    };
+    animationTo.prototype.stop = function() {
+        clearInterval(this.intervalId);
     }
 
 })();
