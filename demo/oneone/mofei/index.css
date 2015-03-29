@@ -1,0 +1,254 @@
+body {
+    margin: 0;
+    overflow: hidden;
+}
+
+.hotBj {
+    position: absolute;
+    top: 10px;
+    text-align: center;
+    width: 100%;
+    color: white;
+    z-index: 1000;
+    font-size: 22px;
+    line-height: 1.6em;
+}
+
+.pan {
+    border: 1px solid #666;
+    position: absolute;
+    left: -500px;
+    top: 130px;
+    min-height: 200px;
+    background: rgba(0, 0, 0, 0.3);
+    color: #ccc;
+    width: 290px;
+    -webkit-transition: all 0.5s ease-in;
+    transition: all 0.5s ease-in;
+}
+
+.pan a {
+    display: inline-block;
+    width: 50%;
+    border: none;
+    padding: 0;
+    margin: 0;
+    float: left;
+    height: 38px;
+    line-height: 38px;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    background: rgba(255, 255, 255, 0.2);
+    border-bottom: 1px solid #444;
+}
+
+.pan a:nth-child(1) {
+    border-right: 1px solid #444;
+    margin-right: -1px;
+}
+
+.pan a.active {
+    border-bottom: none;
+    background: none;
+}
+
+.panNav {
+    overflow: hidden;
+}
+
+.panBlock {
+    font-size: 14px;
+    border-bottom: 1px dotted #333
+}
+
+.panBlock:hover {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.panBlock:nth-child(1) {
+    color: #fff;
+    /*padding-top: 15px;*/
+}
+
+.panBlock span {
+    overflow: hidden;
+}
+
+.panBlock span:nth-child(1) {
+    padding: 5px;
+    display: inline-block;
+    text-align: center;
+    width: 40px;
+}
+
+.panBlock span:nth-child(2) {
+    padding: 5px;
+    display: inline-block;
+    text-align: center;
+    width: 140px;
+    white-space: nowrap;
+}
+
+.panBlock span:nth-child(3) {
+    padding: 5px;
+    display: inline-block;
+    text-align: center;
+    width: 80px;
+    font-weight: bold;
+    /*color: #e90071;*/
+}
+
+.panBlock em {
+    text-decoration: underline;
+    font-style: normal;
+    text-transform: none;
+    cursor: pointer;
+    color: #64daf1;
+}
+
+.panSearch input {
+    position: absolute;
+    top: 100px;
+    left: -400px;
+    width: 290px;
+    text-align: center;
+    background: rgba(255, 255, 255, 0.3);
+    height: 25px;
+    background: none;
+    padding: 0;
+    margin: 0;
+    border: 1px solid #666;
+    color: #a7e808;
+    outline: none;
+    -webkit-transition: all 0.3s ease-in;
+    transition: all 0.3s ease-in;
+}
+
+.panSearch input:-moz-placeholder {
+    color: #a7e808;
+}
+
+.panSearch input::-webkit-input-placeholder {
+    color: #a7e808;
+}
+
+.showAraeTips {
+    font-size: 14px;
+    padding: 5px;
+}
+
+.loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background: #272922;
+    z-index: 10000;
+    color: #e6df6d;
+    text-align: center;
+    padding-top: 20%;
+    -webkit-transition: all 0.5s ease-in;
+    transition: all 0.5s ease-in;
+}
+
+.loadingText {
+    font-size: 40px;
+}
+
+.loadingProgress {
+    background-color: #ccc;
+    background-image: url('../images/loading.gif');
+    width: 0%;
+    height: 20px;
+    margin-top: 20px;
+    -webkit-transition: all 0.5s ease-in;
+    transition: all 0.5s ease-in;
+}
+
+.loadingSubText {
+    font-size: 14px;
+    color: #999;
+    margin-top: 10px;
+}
+
+.bottomTips {
+    position: absolute;
+    bottom: -500px;
+    left: 10px;
+    right: 10px;
+    color: #e6df6d;
+    line-height: 1.6em;
+    font-size: 12px;
+    -webkit-transition: all 0.8s ease-in;
+    transition: all 0.8s ease-in;
+}
+
+.cover {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    text-align: center;
+    color: #fff;
+    -webkit-transition: all 0.8s ease-in;
+    transition: all 0.8s ease-in;
+}
+
+.cover button {
+    border: 1px solid #ccc;
+    padding: 8px 20px;
+    margin-top: 150px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.cover .tips {
+    position: absolute;
+    bottom: 0px;
+    width: 100%;
+    padding: 15px;
+    color: #fff;
+    text-shadow: 0 0 20px #0AAFE6, 0 0 20px rgba(10, 175, 230, 0);
+}
+
+.cover .line-1,
+.cover .line-2 {
+    position: absolute;
+    height: 10px;
+    width: 100%;
+    background: #fff;
+    -webkit-transition: all 0.6s ease-in;
+    transition: all 0.6s ease-in;
+}
+
+.cover .line-1 {
+    left: -100%;
+    top: 50%;
+}
+
+.cover .line-2 {
+    right: -100%;
+    bottom: 50%;
+}
+
+.cover .title {
+    height: 140px;
+    line-height: 140px;
+    width: 100%;
+    margin-top: -65px;
+    position: absolute;
+    font-size: 0px;
+    top: 50%;
+    -webkit-transform: rotate(-10deg);
+    -webkit-transition: all 0.2s ease-in;
+    transition: all 0.2s ease-in;
+    text-shadow: 1px 1px 8px #87CEEB;
+    white-space: nowrap;
+    /*font-size: 120px;*/
+}
