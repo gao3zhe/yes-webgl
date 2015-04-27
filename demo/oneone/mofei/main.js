@@ -2,6 +2,12 @@ var config = {
     radius: 100
 }
 
+var global = {
+    start: true,
+    autoMoveId: 0
+}
+
+
 
 var earthGL = document.getElementById('earth');
 
@@ -18,8 +24,6 @@ renderer.autoClear = false;
 renderer.sortObjects = false;
 earthGL.appendChild(renderer.domElement);
 
-
-
 //camera
 var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 20000);
 camera.position.z = 200;
@@ -34,6 +38,7 @@ var citys = new THREE.Object3D();
 rotating.add(visual);
 scene.add(rotating);
 rotating.add(citys);
+
 
 
 
@@ -58,7 +63,7 @@ indexedMapTexture.minFilter = THREE.NearestFilter;
 
 
 var outlinedMapTexture = THREE.ImageUtils.loadTexture('images/map_outline.png');
-var blendImage = THREE.ImageUtils.loadTexture("images/earth-day4.jpg");
+var blendImage = THREE.ImageUtils.loadTexture("images/earth-day5.jpg");
 // outlinedMapTexture.needsUpdate = true;
 
 var uniforms = {
@@ -86,22 +91,65 @@ var uniforms = {
 
 
 var shaderMaterial = new THREE.ShaderMaterial({
-    // opacity: 0.1,
-    // blending: THREE.AdditiveBlending,
-    // transparent: true,
-    // depthTest: true,
-    // depthWrite: false,
     uniforms: uniforms,
     vertexShader: document.getElementById('globeVertexShader').textContent,
     fragmentShader: document.getElementById('globeFragmentShader').textContent,
 });
 
-var earth = new THREE.Mesh(new THREE.SphereGeometry(config.radius, 100, 100), shaderMaterial);
+var earthGeo = new THREE.SphereGeometry(config.radius, 100, 100);
+var earth = new THREE.Mesh(earthGeo, shaderMaterial);
 earth.doubleSided = false;
 earth.rotation.x = Math.PI;
 earth.rotation.y = -Math.PI / 2;
 earth.rotation.z = Math.PI;
 rotating.add(earth);
+
+
+
+
+
+/***************/
+var earthGL_shadow = document.getElementById('earthShadow');
+
+//snece
+var scene_shadow = new THREE.Scene();
+scene_shadow.matrixAutoUpdate = false;
+
+//reader
+var renderer_shadow = new THREE.WebGLRenderer({
+    antialias: false
+});
+renderer_shadow.setSize(window.innerWidth, window.innerHeight);
+renderer_shadow.autoClear = false;
+renderer_shadow.sortObjects = false;
+earthGL_shadow.appendChild(renderer_shadow.domElement);
+
+// //camera
+var camera_shadow = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 20000);
+camera_shadow.position.z = 200;
+camera_shadow.position.y = 0;
+
+var indexedMapTexture = THREE.ImageUtils.loadTexture("images/map_indexed.png");
+// indexedMapTexture.needsUpdate = true;
+indexedMapTexture.magFilter = THREE.NearestFilter;
+indexedMapTexture.minFilter = THREE.NearestFilter;
+
+
+var shaderMaterial_shadow = new THREE.MeshBasicMaterial({
+    map: indexedMapTexture
+});
+
+// //rotating
+var rotating_shadow = new THREE.Object3D();
+scene_shadow.add(rotating_shadow);
+
+var earth_shadow = new THREE.Mesh(earthGeo.clone(), shaderMaterial_shadow);
+earth_shadow.doubleSided = false;
+earth_shadow.rotation.x = Math.PI;
+earth_shadow.rotation.y = -Math.PI / 2;
+earth_shadow.rotation.z = Math.PI;
+rotating_shadow.add(earth_shadow);
+/***************/
 
 
 function showPoint(lon, lat, obj) {
@@ -138,27 +186,9 @@ var belt = new THREE.Mesh(new THREE.SphereGeometry(config.radius + 20, 100, 100)
 
 
 
-var earthGlowMaterial = new THREE.ShaderMaterial({
-    uniforms: {
-        "c": {
-            type: "f",
-            value: 0.5
-        },
-        "p": {
-            type: "f",
-            value: 1.8
-        },
-        glowColor: {
-            type: "c",
-            value: new THREE.Color('#00b3ff')
-        },
-        viewVector: {
-            type: "v3",
-            value: camera.position
-        }
-    },
-    vertexShader: document.getElementById('glowVertexShader').textContent,
-    fragmentShader: document.getElementById('glowFragmentShader').textContent,
+var earthGlowMaterial = new THREE.MeshBasicMaterial({
+    color: 'skyblue',
+    opacity: 0.2,
     // side: THREE.FrontSide,
     blending: THREE.AdditiveBlending,
     transparent: true
@@ -327,6 +357,9 @@ function pointsToPlace(points) {
 var render = function() {
     renderer.clear();
     renderer.render(scene, camera);
+    //
+
+    //
     particleUpdate(rotating);
     // citysUpdate();
     requestAnimationFrame(render);
@@ -334,7 +367,7 @@ var render = function() {
     // earthGlow.material.uniforms.viewVector.value = new THREE.Vector3().subVectors(rotating.position, earthGlow.position);
 };
 
-earthGlow.material.uniforms.viewVector.value = camera.rotation;
+// earthGlow.material.uniforms.viewVector.value = camera.rotation;
 highlightArea();
 render();
 
@@ -689,41 +722,234 @@ function highlightArea(index) {
  */
 
 var cityColor = {
-    "16": "湖南",
-    "17": "陕西",
-    "18": "广东",
-    "19": "吉林",
-    "20": "河北",
-    "21": "湖北",
-    "22": "贵州",
-    "23": "山东",
-    "24": "江西",
-    "25": "河南",
-    "32": "辽宁",
-    "33": "山西",
-    "34": "安徽",
-    "35": "福建",
-    "36": "浙江",
-    "37": "江苏",
-    "38": "重庆",
-    "39": "宁夏",
-    "40": "海南",
-    "41": "台湾",
-    "49": "北京",
-    "50": "天津",
-    "51": "上海",
-    "52": "香港",
-    "53": "澳门",
-    "01": "新疆",
-    "02": "西藏",
-    "03": "内蒙古",
-    "04": "青海",
-    "05": "四川",
-    "06": "黑龙江",
-    "07": "甘肃",
-    "08": "云南",
-    "09": "广西"
+    "1": "秘鲁",
+    "2": "布基纳法索",
+    "3": "法国",
+    "4": "利比亚",
+    "5": "白俄罗斯",
+    "6": "巴",
+    "7": "印度尼西亚",
+    "8": "也门",
+    "9": "马达加斯加",
+    "10": "玻利维亚,多民族国",
+    "11": "科特迪瓦",
+    "12": "阿尔及利亚",
+    "13": "瑞士",
+    "14": "喀麦隆",
+    "15": "马其顿,前南斯拉夫共和国",
+    "16": "博茨瓦纳",
+    "17": "乌",
+    "18": "肯尼亚",
+    "19": "台湾",
+    "20": "约旦",
+    "21": "墨西哥",
+    "22": "阿拉伯联合酋长国",
+    "23": "伯利兹",
+    "24": "巴西",
+    "25": "塞拉利昂",
+    "26": "马里",
+    "27": "刚果,刚果民主共和国",
+    "28": "意大利",
+    "29": "索马里",
+    "30": "阿富汗",
+    "31": "孟",
+    "32": "多米尼加共和国",
+    "33": "几内亚比绍",
+    "34": "加纳",
+    "35": "奥地利",
+    "36": "瑞典",
+    "37": "土耳其",
+    "38": "乌干达",
+    "39": "莫桑比克",
+    "40": "日本",
+    "41": "新西兰",
+    "42": "古巴",
+    "43": "委内瑞拉玻利瓦尔共和国",
+    "44": "葡萄牙",
+    "45": "哥伦比亚",
+    "46": "毛里塔尼亚",
+    "47": "安哥拉",
+    "48": "地工",
+    "49": "苏丹红",
+    "50": "泰国",
+    "51": "澳大利亚",
+    "52": "巴布亚新几内亚",
+    "53": "伊拉克",
+    "54": "克罗地亚",
+    "55": "格陵兰",
+    "56": "尼日尔",
+    "57": "丹麦",
+    "58": "拉脱维亚",
+    "59": "罗马尼亚",
+    "60": "赞比亚",
+    "61": "伊朗伊斯兰共和国",
+    "62": "缅甸",
+    "63": "埃塞俄比亚",
+    "64": "危地马拉",
+    "65": "苏里南",
+    "66": "西撒哈拉",
+    "67": "捷克共和国",
+    "68": "乍得",
+    "69": "阿尔巴尼亚",
+    "70": "芬兰",
+    "71": "阿拉伯叙利亚共和国",
+    "72": "吉尔吉斯斯坦",
+    "73": "所罗门群岛",
+    "74": "阿曼",
+    "75": "巴拿马",
+    "76": "阿根廷",
+    "77": "英国",
+    "78": "哥斯达黎加",
+    "79": "巴拉圭",
+    "80": "几内亚",
+    "81": "爱尔兰",
+    "82": "尼日利亚",
+    "83": "突尼斯",
+    "84": "波兰",
+    "85": "纳米比亚",
+    "86": "南非",
+    "87": "埃及",
+    "88": "坦桑尼亚联合共和国",
+    "89": "格",
+    "90": "沙特阿拉伯",
+    "91": "越南",
+    "92": "俄罗斯联邦",
+    "93": "海地",
+    "94": "波黑",
+    "95": "印度",
+    "96": "中国",
+    "97": "加拿大",
+    "98": "萨尔瓦多",
+    "99": "圭亚那",
+    "100": "比利时",
+    "101": "赤道几内亚",
+    "102": "莱索托",
+    "103": "保加利亚",
+    "104": "布隆迪",
+    "105": "吉布提",
+    "106": "阿塞拜疆",
+    "107": "马来西亚",
+    "108": "菲律宾",
+    "109": "乌拉圭",
+    "110": "刚果",
+    "111": "塞尔维亚",
+    "112": "黑山",
+    "113": "爱沙尼亚",
+    "114": "卢旺达",
+    "115": "亚美尼亚",
+    "116": "塞内加尔",
+    "117": "东乡",
+    "118": "西班牙",
+    "119": "加蓬",
+    "120": "匈牙利",
+    "121": "马拉维",
+    "122": "塔吉克斯坦",
+    "123": "柬埔寨",
+    "124": "朝鲜",
+    "125": "洪都拉斯",
+    "126": "冰岛",
+    "127": "尼加拉瓜",
+    "128": "智利",
+    "129": "摩洛哥",
+    "130": "利比里亚",
+    "131": "荷兰",
+    "132": "中非共和国",
+    "133": "斯洛伐克",
+    "134": "立陶宛",
+    "135": "津巴布韦",
+    "136": "斯里兰卡",
+    "137": "以色列",
+    "138": "老挝",
+    "139": "韩国",
+    "140": "希腊",
+    "141": "土库曼斯坦",
+    "142": "厄瓜多尔",
+    "143": "贝宁",
+    "144": "斯洛文尼亚",
+    "145": "挪威",
+    "146": "摩尔多瓦共和国",
+    "147": "黎巴嫩",
+    "148": "尼泊尔",
+    "149": "厄",
+    "150": "美国",
+    "151": "哈萨克斯坦",
+    "152": "南极人",
+    "153": "斯威士兰",
+    "154": "乌兹别克斯坦",
+    "155": "内蒙古",
+    "156": "不丹",
+    "157": "新喀里多尼亚",
+    "158": "斐济",
+    "159": "科威特",
+    "160": "东帝汶",
+    "161": "巴哈马",
+    "162": "瓦努阿图",
+    "163": "福克兰群岛（马尔维纳斯群岛）",
+    "164": "冈比亚",
+    "165": "卡塔尔",
+    "166": "牙买加",
+    "167": "塞浦路斯",
+    "168": "波多黎各",
+    "169": "占领的巴勒斯坦领土",
+    "170": "文莱莱达鲁萨兰国",
+    "171": "特立尼达和多巴哥",
+    "172": "佛得角",
+    "173": "法属波利尼西亚",
+    "174": "萨摩亚",
+    "175": "卢森堡",
+    "176": "科摩罗",
+    "177": "毛里求斯",
+    "178": "法罗群岛",
+    "179": "圣多美和普林西比",
+    "181": "多米尼克",
+    "182": "汤加",
+    "183": "基里巴斯",
+    "184": "密克罗尼西亚联邦国",
+    "185": "巴林",
+    "186": "安道尔共和国",
+    "187": "北马里亚纳群岛",
+    "188": "PALAU",
+    "189": "塞舌尔",
+    "190": "安提瓜和巴布达",
+    "191": "巴巴多斯",
+    "192": "特克斯和凯科斯群岛",
+    "193": "圣文森特和格林纳丁斯",
+    "194": "圣卢西亚岛",
+    "195": "马约特",
+    "196": "维京群岛,美国",
+    "197": "格林纳达",
+    "198": "马耳他",
+    "199": "马尔代夫",
+    "200": "开曼群岛",
+    "201": "圣基茨和尼维斯",
+    "202": "蒙特塞拉特",
+    "203": "圣巴泰勒米",
+    "204": "纽埃",
+    "205": "圣皮埃尔和密克隆",
+    "206": "库克群岛",
+    "207": "瓦利斯和富图纳",
+    "208": "美属萨摩亚",
+    "209": "马绍尔群岛",
+    "210": "阿鲁巴岛",
+    "211": "列支敦士登",
+    "212": "英属维尔京群岛",
+    "213": "圣赫勒拿,阿森松与特里斯坦达库尼亚",
+    "214": "泽西岛",
+    "215": "安圭拉",
+    "217": "根西",
+    "218": "圣马力诺",
+    "219": "百慕大",
+    "220": "图瓦卢",
+    "221": "瑙鲁",
+    "222": "直布罗陀",
+    "223": "皮特凯恩",
+    "224": "摩纳哥",
+    "225": "罗马教廷（梵蒂冈城国）",
+    "226": "马恩岛",
+    "227": "古阿姆",
+    "228": "新加坡"
 };
+
 /**
  * for the key events
  */
@@ -790,7 +1016,7 @@ var cityColor = {
     function onDocumentMouseMove(event) {
         var cityX = getPickedColor();
 
-        // followMouse(cityX[0], event);
+        followMouse(cityX[0], event);
 
         // moveBymouse(event)
 
@@ -808,6 +1034,11 @@ var cityColor = {
         pmouseY = pmouseY || mouseY;
 
         if (dragging) {
+            if (global.start == true) {
+                return false;
+            } else {
+                clearInterval(global.autoMoveId);
+            }
             var rotateVYD = (mouseX - pmouseX) / 2 * Math.PI / 180;
             var rotateVXD = (mouseY - pmouseY) / 2 * Math.PI / 180;
             //x is coefficient, depend on camera's scale,the big the small;
@@ -907,18 +1138,16 @@ var cityColor = {
         animationTo(rotating.rotation.x, 0.49, 400, function(value) {
             rotating.rotation.x = rotateVX = value;
         });
-        // animationTo(rotating.rotation.z, 300, 400, function(value) {
-        //     rotating.rotation.z  = value;
-        // });
-        // animationTo(camera.position.y, 40, 400, function(value) {
-        //     camera.position.y = value;
-        // });
+
 
         animationTo(camera.fov, 55, 400, function(value) {
+            // console.log('xxx--')
             camera.fov = value;
             camera.updateProjectionMatrix();
+        }, function() {
             moveToEnd();
         });
+        textShow();
     }
 
     function moveToEnd() {
@@ -926,25 +1155,20 @@ var cityColor = {
         animationTo(rotating.rotation.y, 5.82, 2000, function(value) {
             rotating.rotation.y = rotateVY = value;
         }, function() {
-            setInterval(function() {
-                rotateVY += 0.0004;
+            global.autoMoveId = setInterval(function() {
+                rotateVY += 0.01;
                 rotating.rotation.y = rotateVY;
             }, 16);
         });
-        setTimeout(function() {
-            showTitle();
-        }, 1600);
-        // animationTo(rotating.rotation.x, -0.07, 2000, function(value) {
-        //     rotating.rotation.x = rotateVX = value;
-        // }, function() {
-        //     showTitle();
-        // });
+
+        // setTimeout(function() {
+
+        // }, 100);
     }
 
-    function showTitle() {
-        textShow();
-        $('.cover').css('opacity', 1);
-    }
+    // function showTitle() {
+    // textShow();
+    // }
 
     animation = setInterval(initMove, 1000 / 60);
     //************
@@ -959,55 +1183,86 @@ var cityColor = {
         // d3Graphs.zoomBtnMouseup();
         dragging = false;
         if (isClick) {
-            var color = getPickedColor();
+            // var color = getPickedColor();
+            var country = getPickedColor();
+            if (global.start == true) {
+                return false;
+            } else {
+                clearInterval(global.autoMoveId);
+            }
+            // console.log(cityColor[country[0]])
         }
     }
 
     function onDoucmentClick(evert) {
         // console.log(mouseX, mouseY);
-        // getPickedColor()
+
     }
 
     function getPickedColor() {
         highlightArea();
-        rotating.remove(visual);
-        rotating.remove(citys);
-        uniforms['outlineLevel'].value = 0;
-        lookupTexture.needsUpdate = true;
+        renderer_shadow.clear();
+        rotating_shadow.rotation.x = rotating.rotation.x;
+        rotating_shadow.rotation.y = rotating.rotation.y;
+        rotating_shadow.rotation.z = rotating.rotation.z;
+        camera_shadow.position.x = camera.position.x;
+        camera_shadow.position.y = camera.position.y;
+        camera_shadow.position.z = camera.position.z;
+        camera_shadow.fov = camera.fov;
+        camera_shadow.updateProjectionMatrix();
+        renderer_shadow.render(scene_shadow, camera_shadow);
 
-        renderer.clear();
-        renderer.render(scene, camera);
-
-        var gl = renderer.context;
-        gl.preserveDrawingBuffer = true;
-
-
-        var mx = (mouseX + renderer.context.canvas.width / 2);
-        var my = (-mouseY + renderer.context.canvas.height / 2);
+        var gl = renderer_shadow.context;
+        var mx = (mouseX + renderer_shadow.context.canvas.width / 2);
+        var my = (-mouseY + renderer_shadow.context.canvas.height / 2);
         mx = Math.floor(mx);
         my = Math.floor(my);
-
         var buf = new Uint8Array(4);
         gl.readPixels(mx, my, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, buf);
-
-        renderer.autoClear = true;
-        renderer.autoClearColor = true;
-        renderer.autoClearDepth = true;
-        renderer.autoClearStencil = true;
-
-
-        gl.preserveDrawingBuffer = false;
-
-        rotating.add(visual);
-        rotating.add(citys);
-        uniforms['outlineLevel'].value = 1;
         highlightArea(buf[0]);
-
-        var colorIndex = buf[0] < 10 ? '0' + buf[0] : buf[0];
-
         return buf;
-
     }
+
+    // function getPickedColor() {
+    //     highlightArea();
+    //     rotating.remove(visual);
+    //     rotating.remove(citys);
+    //     uniforms['outlineLevel'].value = 0;
+    //     lookupTexture.needsUpdate = true;
+
+    //     renderer.clear();
+    //     renderer.render(scene, camera);
+
+    //     var gl = renderer.context;
+    //     gl.preserveDrawingBuffer = true;
+
+
+    //     var mx = (mouseX + renderer.context.canvas.width / 2);
+    //     var my = (-mouseY + renderer.context.canvas.height / 2);
+    //     mx = Math.floor(mx);
+    //     my = Math.floor(my);
+
+    //     var buf = new Uint8Array(4);
+    //     gl.readPixels(mx, my, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, buf);
+
+    //     renderer.autoClear = true;
+    //     renderer.autoClearColor = true;
+    //     renderer.autoClearDepth = true;
+    //     renderer.autoClearStencil = true;
+
+
+    //     gl.preserveDrawingBuffer = false;
+
+    //     rotating.add(visual);
+    //     rotating.add(citys);
+    //     uniforms['outlineLevel'].value = 1;
+    //     highlightArea(buf[0]);
+
+    //     var colorIndex = buf[0] < 10 ? '0' + buf[0] : buf[0];
+    //     console.log('1', buf)
+    //     return buf;
+
+    // }
 
     var zoom = {
         inprogress: false,
@@ -1118,55 +1373,39 @@ var cityColor = {
 })();
 
 function textShow() {
-    setTimeout(function() {
-        $('.cover .line-1').css({
-            'left': "20%",
-            'width': "60%"
-        })
-        $('.cover .line-2').css({
-            'right': "20%",
-            'width': "60%"
-        })
-        setTimeout(function() {
-            $('.cover .line-1').css({
-                'left': "-10%",
-                'width': "120%",
-            });
-            $('.cover .line-2').css({
-                'right': "-10%",
-                'width': "120%",
-            })
-            $('.cover .line-1,.cover .line-2').css({
-                'transition': 'all 0.1s ease-in'
-            }).css({
-                "-webkit-transform": 'rotate(-10deg)'
-            });
-            setTimeout(function() {
-                $('.cover .line-1').css({
-                    'margin-top': '-120px'
-                });
-                $('.cover .line-2').css({
-                    'margin-bottom': '-120px'
-                });
-                $('.cover .title').css({
-                    'font-size': '200px'
-                })
-                setTimeout(function() {
-                    $('.cover .line-1').css({
-                        'margin-top': '-80px'
-                    });
-                    $('.cover .line-2').css({
-                        'margin-bottom': '-80px'
-                    })
-                    $('.cover .title').css({
-                        'font-size': '120px'
-                    })
-                }, 200)
-            }, 200)
-        }, 800)
+    global.start = false;
+    $('.cover').css('opacity', 1);
 
-    }, 1000)
+    setTimeout(function() {
+        $('.cover .title').css({
+            'left': '0',
+            'right': '0'
+        })
+    }, 800);
+
+    setTimeout(function() {
+        $('.cover .title').css({
+            'width': 400,
+            'left': document.body.clientWidth - 420,
+            'right': '0',
+            'bottom': '20px',
+            'font-size': '20px'
+        });
+
+    }, 2000);
+
+    setTimeout(function() {
+        $('.cover .title').css({
+            left: 'auto',
+            height: '120px'
+        });
+        $('.cover .subtitle').show();
+    }, 2800);
+
+    setTimeout(function() {
+        $('.cover .subtitle').css({
+            opacity: 1
+        });
+    }, 3400);
 
 }
-
-// $('')
